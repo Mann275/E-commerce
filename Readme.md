@@ -1,6 +1,6 @@
 <div align="center">
 
-# �️ PC Components E-Commerce Platform
+# 🖥️ E-Commerce Platform
 
 ### Full-Stack Multi-Role Computer Hardware Shopping Application
 
@@ -12,7 +12,6 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
 **A specialized e-commerce platform for PC components and hardware, built with the MERN stack. Shop for GPUs, CPUs, RAM, SSDs, cooling solutions, and more with secure authentication and role-based access.**
-
 
 </div>
 
@@ -113,7 +112,6 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 
 ---
 
-
 ## 🛠️ Tech Stack
 
 ### Frontend Technologies
@@ -159,7 +157,6 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 
 ---
 
-
 ## 📞 Contact
 
 ### Project Maintainer
@@ -173,13 +170,11 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 
 ---
 
-
 <div align="center">
 
 ### 🎉 Thank You for Visiting! 🎉
 
 ![Footer Banner](https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=1200&h=200&fit=crop)
-
 
 **Made with ❤️ and lots of ☕**
 
