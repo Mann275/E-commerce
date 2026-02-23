@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
-
-export const verifyEmail = (token, email) => {
+import { welcomeEmailTemplate } from "./EmailTemplet.js";
+export const verifyEmail = (firstName, token, email) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -13,8 +13,9 @@ export const verifyEmail = (token, email) => {
   const mailConfiguration = {
     from: process.env.MAIL_USER,
     to: email,
-    subject: "Email Verification",
-    text: `🙏Please verify your email by clicking on the following link: http://localhost:5173/verify/${token}`,
+    subject: "Email Verification ✅",
+    // text: `🙏Please verify your email by clicking on the following link: http://localhost:5173/verify/${token}`,
+    html: welcomeEmailTemplate(firstName, email, token),
   };
 
   transporter.sendMail(mailConfiguration, function (err, data) {

@@ -7,7 +7,7 @@ import { otpmail } from "../utils/otpmail.js";
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
     if (!firstName || !lastName || !email || !password) {
       return res
         .status(400)
@@ -19,17 +19,51 @@ export const register = async (req, res) => {
         .status(400)
         .json({ success: false, message: "User already exists" });
     }
+
+    // Password validation
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    }
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one uppercase letter",
+      });
+    }
+    if (!/[a-z]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one lowercase letter",
+      });
+    }
+    if (!/\d/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one number",
+      });
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one special character",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 11);
     const newUser = await User.create({
       firstName,
       lastName,
       email,
       password: hashedPassword,
+      role: role || "customer",
     });
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "10m",
     });
-    verifyEmail(token, email); // email will send from here
+    verifyEmail(firstName, token, email); // email will send from here
     newUser.token = token;
     await newUser.save();
     return res.status(201).json({
@@ -76,10 +110,30 @@ export const verify = async (req, res) => {
     }
     user.token = null;
     user.isverified = true;
+    user.isloggedin = true;
     await user.save();
+
+    // Generate access and refresh tokens for auto-login
+    const accesstoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    const refreshtoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
+    // Create session for the user
+    const existingSession = await Session.findOne({ userId: user._id });
+    if (existingSession) {
+      await Session.deleteOne({ userId: user._id });
+    }
+    await Session.create({ userId: user._id });
+
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully",
+      message: `Welcome, ${user.firstName}! Your email has been verified successfully.`,
+      user: user,
+      accesstoken,
+      refreshtoken,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -98,7 +152,7 @@ export const reverify = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "10m",
     });
-    verifyEmail(token, email); // email will send from here for reverify
+    verifyEmail(user.firstName, token, email); // email will send from here for reverify
     user.token = token;
     await user.save();
     return res.status(200).json({
@@ -273,12 +327,55 @@ export const resetPassword = async (req, res) => {
         message: "New password and confirm password do not match",
       });
     }
+
+    // Check if new password is same as old password
+    const isSameAsOld = await bcrypt.compare(newPassword, user.password);
+    if (isSameAsOld) {
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be the same as your old password",
+      });
+    }
+
+    // Password validation
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one uppercase letter",
+      });
+    }
+    if (!/[a-z]/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one lowercase letter",
+      });
+    }
+    if (!/\d/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one number",
+      });
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one special character",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 11);
     user.password = hashedPassword;
     await user.save();
     return res.status(200).json({
       success: true,
-      message: "Password reset successfully.",
+      message:
+        "Password reset successfully. You can now login with your new password.",
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -313,11 +410,3 @@ export const getUserById = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-// export const updateUser = async (req, res) => {
-//   try {
-    
-//   } catch (error) {
-    
-//   }
-// }
