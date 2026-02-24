@@ -52,10 +52,10 @@ function VerifyEmail() {
   }, [token]);
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-linear-to-br from-slate-900 via-cyan-900 to-slate-900">
+    <div className="relative flex items-center justify-center min-h-screen bg-linear-to-br from-gray-900 via-red-900 to-gray-900">
       {/* Animated Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_50%)] animate-pulse"></div>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-size-[50px_50px]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(220,38,38,0.15),transparent_50%)] animate-pulse"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(220,38,38,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(220,38,38,0.05)_1px,transparent_1px)] bg-size-[50px_50px]"></div>
 
       {/* Back Button */}
       <Link
