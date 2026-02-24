@@ -79,31 +79,40 @@ const Overview = () => {
         <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-gray-600 to-transparent"></div>
 
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <TrustCard
-              icon={Shield}
-              title="Official Warranty"
-              desc="Direct manufacturer guarantees on all parts."
-              delay={0.1}
-            />
-            <TrustCard
-              icon={Truck}
-              title="Fast Shipping"
-              desc="Next-day delivery available for metro areas."
-              delay={0.2}
-            />
-            <TrustCard
-              icon={Clock}
-              title="24/7 Support"
-              desc="Expert technical assistance whenever you need it."
-              delay={0.3}
-            />
-            <TrustCard
-              icon={Award}
-              title="Price Match"
-              desc="We won't be beaten on price for official stock."
-              delay={0.4}
-            />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: "🎮",
+                title: "Gaming Focused",
+                desc: "Built by gamers, for gamers. Every product is curated for the gaming community.",
+              },
+              {
+                icon: "💰",
+                title: "Best Prices",
+                desc: "Compare prices from multiple sellers and get the best deals on every purchase.",
+              },
+              {
+                icon: "🔒",
+                title: "Buyer Protection",
+                desc: "100% secure payments with buyer protection on every transaction.",
+              },
+              {
+                icon: "🚀",
+                title: "Fast Delivery",
+                desc: "Get your products delivered fast with our verified shipping partners.",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="group p-6 rounded-2xl bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-white/5 hover:border-cyan-500/30 transition-all duration-300 hover:scale-105"
+              >
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-gray-400 text-sm">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
