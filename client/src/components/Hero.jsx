@@ -38,9 +38,13 @@ const Hero = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-linear-to-r from-gray-900/95 via-gray-900/80 to-transparent z-10" />
           <img
-            src="https://images.unsplash.com/photo-1761131828541-33e7b1167cc2?q=100&w=2574&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1761131828541-33e7b1167cc2?q=75&w=1920&auto=format&fit=crop"
+            // src="https://images.unsplash.com/photo-1761131745229-763bffe31248?q=75&w=1920&auto=format&fit=crop"
+
             alt="Gaming Setup"
             className="w-full h-full object-cover opacity-60"
+            loading="eager"
+            fetchpriority="high"
           />
         </div>
 
