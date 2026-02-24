@@ -4,7 +4,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify Your Email - NexHardware</title>
+    <title>Verify Your Email - OverClocked</title>
     <style>
       @keyframes fadeInUp {
         from {
@@ -241,7 +241,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                           text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
                         "
                       >
-                        NexHardware
+                        OverClocked
                       </h1>
                       <p
                         style="
@@ -288,7 +288,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                     line-height: 1.6;
                   "
                 >
-                  Thank you for joining NexHardware! Click below to verify your
+                  Thank you for joining OverClocked! Click below to verify your
                   email and unlock access to premium PC components.
                 </p>
               </td>
@@ -416,7 +416,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                           text-align: center;
                         "
                       >
-                        ⭐ Why Choose NexHardware?
+                        ⭐ Why Choose OverClocked?
                       </p>
                       <table width="100%" cellpadding="8" cellspacing="0">
                         <tr>
@@ -474,7 +474,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                   </a>
                 </p>
                 <p style="margin: 0 0 8px 0; color: #64748b; font-size: 10px">
-                  © 2026 NexHardware | All Rights Reserved
+                  © 2026 OverClocked | All Rights Reserved
                 </p>
               </td>
             </tr>

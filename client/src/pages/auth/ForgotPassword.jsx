@@ -180,6 +180,18 @@ function ForgotPassword() {
         <span className="font-medium">Back to Login</span>
       </Link>
 
+      {/* Logo */}
+      <div className="fixed top-6 right-6 z-50 flex items-center bg-transparent px-4 py-2">
+        <img
+          src="/logo.png"
+          alt="OverClocked Logo"
+          className="w-25 h-25 object-contain"
+        />
+        <span className="text-2xl font-bold text-white">
+          Over<span className="text-sky-400">Clocked</span>
+        </span>
+      </div>
+
       {/* Forgot Password Form */}
       <div
         className="bg-black/60 backdrop-blur-xl p-8 rounded-2xl border border-white/30 w-full max-w-md shadow-2xl z-40"

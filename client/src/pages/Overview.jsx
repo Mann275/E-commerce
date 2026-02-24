@@ -1,5 +1,5 @@
 import React from "react";
-import Hero from "../components/Hero";
+import Hero from "../components/Hero_overview";
 import FeaturedCategories from "../components/FeaturedCategories";
 import {
   Shield,

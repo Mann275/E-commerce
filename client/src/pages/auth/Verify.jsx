@@ -9,6 +9,27 @@ function Verify() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.1),transparent_50%)] animate-pulse"></div>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(34,197,94,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(34,197,94,0.05)_1px,transparent_1px)] bg-size-[50px_50px]"></div>
 
+      {/* Back to Signup Button */}
+      <Link
+        to="/signup"
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20 shadow-lg"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="font-medium">Back to Signup</span>
+      </Link>
+
+      {/* Logo */}
+      <div className="fixed top-6 right-6 z-50 flex items-center  bg-transparent px-4 py-2">
+        <img
+          src="/logo.png"
+          alt="OverClocked Logo"
+          className="w-25 h-25 object-contain"
+        />
+        <span className="text-2xl font-bold text-white">
+          Over<span className="text-sky-400">Clocked</span>
+        </span>
+      </div>
+
       {/* Verification Message */}
       <div
         className="bg-black/60 backdrop-blur-xl p-8 rounded-2xl border border-white/30 w-full max-w-md shadow-2xl z-40 text-center mx-4"
