@@ -1,19 +1,23 @@
 import React from "react";
+import BackgroundGlow from "../../components/BackgroundGlow";
 import { FileText } from "lucide-react";
 
 const Terms = () => {
   return (
-    <div className="min-h-screen bg-gray-900 pt-20 pb-10">
-      <div className="max-w-3xl mx-auto px-6">
+    <div className="min-h-screen relative pt-20 pb-10">
+      {/* Premium Animated Background */}
+      <BackgroundGlow />
+
+      <div className="max-w-3xl mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="w-16 h-16 bg-linear-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6">
             <FileText className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">
             Terms of Service
           </h1>
-          <p className="text-gray-400">Last updated: February 2026</p>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors">Last updated: February 2026</p>
         </div>
 
         {/* Content */}
@@ -86,11 +90,12 @@ const Terms = () => {
         </div>
 
         {/* Contact */}
-        <div className="mt-12 bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-          <h2 className="text-xl font-bold text-white mb-2">Questions?</h2>
-          <p className="text-gray-400">
+        <div className="mt-12 bg-white/80 dark:bg-gray-900/40 rounded-2xl p-6 border border-sky-900/60
+ dark:border-sky-800/50 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.6)] transition-colors duration-300">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Questions?</h2>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors">
             If you have any questions about these Terms, please contact us at{" "}
-            <span className="text-sky-400">patelmann2705@gmail.com</span>
+            <span className="text-sky-500 dark:text-sky-400">patelmann2705@gmail.com</span>
           </p>
         </div>
       </div>
@@ -99,14 +104,15 @@ const Terms = () => {
 };
 
 const TermSection = ({ number, title, content }) => (
-  <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+  <div className="bg-white/80 dark:bg-gray-900/40 rounded-xl p-6 border border-sky-900/60
+ dark:border-sky-800/50 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.6)] transition-colors duration-300">
     <div className="flex items-start gap-4">
       <span className="w-8 h-8 bg-linear-to-br from-sky-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0">
         {number}
       </span>
       <div>
-        <h2 className="text-lg font-bold text-white mb-2">{title}</h2>
-        <p className="text-gray-400 leading-relaxed text-sm">{content}</p>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2 transition-colors">{title}</h2>
+        <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm transition-colors">{content}</p>
       </div>
     </div>
   </div>

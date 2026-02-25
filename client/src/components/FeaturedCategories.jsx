@@ -62,16 +62,16 @@ const categories = [
 
 const FeaturedCategories = () => {
   return (
-    <section className="py-24 bg-gray-900">
+    <section className="py-24 relative z-10">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-black text-gray-100 mb-4">
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 mb-4 transition-colors">
             SHOP BY{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-400 to-blue-600">
               CATEGORY
             </span>
           </h2>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-lg transition-colors">
             Explore our premium selection of gaming hardware
           </p>
         </div>

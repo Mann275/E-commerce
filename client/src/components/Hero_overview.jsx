@@ -60,7 +60,7 @@ const Hero = () => {
                 <span className="relative z-10">PREMIUM TECH STORE</span>
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-black text-gray-100 leading-[1.1] mb-6 tracking-tight">
+              <h1 className="text-5xl md:text-7xl font-black text-black dark:text-gray-100 leading-[1.1] mb-6 tracking-tight transition-colors duration-300">
                 ELEVATE YOUR <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-400 to-blue-600">
                   GAMING WORLD
@@ -75,14 +75,14 @@ const Hero = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/login"
-                  className="px-8 py-4 bg-linear-to-r from-sky-700 to-blue-700 hover:from-sky-800 hover:to-blue-800 text-white font-bold rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-lg shadow-sky-600/30"
+                  className="px-8 py-4 bg-linear-to-r from-sky-700 to-blue-700 hover:from-sky-800 hover:to-blue-800 text-black dark:text-white font-bold rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-lg shadow-sky-600/30"
                 >
                   Explore Collection <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
                   to="https://github.com/Mann275/E-commerce/blob/main/Readme.md"
                   target="_blank"
-                  className="px-8 py-4 bg-gray-800 hover:bg-gray-700 text-gray-100 font-bold rounded-lg flex items-center justify-center gap-2 border-2 border-gray-600 transition-all"
+                  className="px-8 py-4 bg-gray-800 hover:bg-gray-700 text-black dark:text-white font-bold rounded-lg flex items-center justify-center gap-2 border-2 border-black dark:border-white transition-all shadow-lg"
                 >
                   Discover More
                 </Link>

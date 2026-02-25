@@ -23,10 +23,11 @@ const Terms = lazy(() => import("./pages/info/Terms"));
 
 // Loading component
 const PageLoader = () => (
-  <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-    <div className="text-center">
+  <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center transition-colors duration-300 relative">
+    <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
+    <div className="text-center relative z-10">
       <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-gray-400 text-lg">Loading...</p>
+      <p className="text-gray-600 dark:text-gray-400 text-lg">Loading...</p>
     </div>
   </div>
 );

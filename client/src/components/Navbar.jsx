@@ -1,5 +1,5 @@
-import { ShoppingCart, Menu, X } from "lucide-react";
-import React, { useState } from "react";
+import { ShoppingCart, Menu, X, Sun, Moon } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
@@ -7,8 +7,26 @@ function Navbar() {
   const [user] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Theme logic
+  const [theme, setTheme] = useState(
+    localStorage.getItem("theme") || "dark"
+  );
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
-    <header className="bg-gray-900/95 backdrop-blur-sm fixed w-full z-20 border-b border-gray-800">
+    <header className="bg-gray-950/80 backdrop-blur-xl fixed w-full z-20 border-b border-gray-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
@@ -32,9 +50,21 @@ function Navbar() {
             </ul>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-gray-300 hover:text-sky-400 transition-colors rounded-lg hover:bg-gray-800"
+                aria-label="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+
               <Link
                 to="/cart"
-                className="relative p-2 text-gray-300 hover:text-sky-400 transition-colors"
+                className="relative p-2 text-gray-300 hover:text-sky-400 transition-colors rounded-lg hover:bg-gray-800"
               >
                 <ShoppingCart className="w-5 h-5" />
                 <span className="absolute -top-0.5 -right-0.5 bg-sky-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -56,6 +86,18 @@ function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-300 hover:text-sky-400 transition-colors"
+              aria-label="Toggle Theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+
             <Link to="/cart" className="relative p-2 text-gray-300">
               <ShoppingCart className="w-5 h-5" />
               <span className="absolute -top-0.5 -right-0.5 bg-sky-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -77,7 +119,7 @@ function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-800 py-4">
+          <div className="md:hidden border-t border-gray-800 py-4 bg-gray-950/95 backdrop-blur-xl w-full absolute left-0 px-4">
             <ul className="flex flex-col gap-2">
               <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>
                 Home
