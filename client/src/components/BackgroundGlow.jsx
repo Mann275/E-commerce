@@ -6,7 +6,7 @@ const BackgroundGlow = () => {
       <div className="pointer-events-none fixed inset-0 z-0 bg-slate-50 dark:bg-black transition-colors duration-300">
         {/* Animated Orbs */}
         <div className="absolute top-0 -left-64 w-96 h-96 bg-sky-200/20 dark:bg-sky-500/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob"></div>
-        <div className="absolute top-0 -right-64 w-96 h-96 bg-blue-200/20 dark:bg-blue-500/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+        <div className="absolute top-0 -right-64 w-96 h-96 bg-blue-200/20 dark:bg-blue-400/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-64 left-20 w-96 h-96 bg-indigo-200/20 dark:bg-indigo-500/10 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
 
         {/* Premium Grid Texture */}

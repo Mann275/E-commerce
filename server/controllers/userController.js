@@ -443,3 +443,45 @@ export const updateProfile = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) return res.status(400).json({ success: false, message: "Incorrect old password" });
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ success: false, message: "New passwords do not match" });
+    }
+
+    // Checking if new password is same as old
+    const isSameAsOld = await bcrypt.compare(newPassword, user.password);
+    if (isSameAsOld) {
+      return res.status(400).json({ success: false, message: "New password cannot be same as old password" });
+    }
+
+    // Password validation
+    if (newPassword.length < 8) return res.status(400).json({ success: false, message: "Password must be at least 8 characters long" });
+    if (!/[A-Z]/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one uppercase letter" });
+    if (!/[a-z]/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one lowercase letter" });
+    if (!/\d/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one number" });
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one special character" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 11);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

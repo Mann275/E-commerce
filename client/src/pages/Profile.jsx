@@ -52,17 +52,49 @@ const Profile = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e) => {
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
         toast.error("Image size should be less than 2MB");
         return;
       }
+
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
+      reader.onloadend = async () => {
+        const base64Image = reader.result;
+        setProfilePic(base64Image);
+
+        // Auto-save just the image 
+        try {
+          setIsUploadingImage(true);
+          const accessToken = localStorage.getItem("accesstoken");
+          const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+          const res = await axios.put(
+            `${API_URL}/api/v1/users/update-profile`,
+            { profilePic: base64Image }, // Send only the image
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            }
+          );
+
+          if (res.data.success) {
+            toast.success("Profile picture updated!");
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+            dispatch(setUser(res.data.user));
+          }
+        } catch (error) {
+          console.error("Image upload error:", error);
+          toast.error("Failed to update profile picture");
+          // Revert on failure
+          setProfilePic(user?.profilePic || "");
+        } finally {
+          setIsUploadingImage(false);
+        }
       };
     }
   };
@@ -111,7 +143,7 @@ const Profile = () => {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Left Column: Profile Picture */}
           <div className="lg:col-span-3">
-            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-blue-500 dark:border-neutral-800 flex flex-col items-center justify-center space-y-4">
+            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-blue-400 dark:border-neutral-800 flex flex-col items-center justify-center space-y-4">
               <div className="relative group">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white dark:border-neutral-800 shadow-md">
                   {profilePic ? (
@@ -146,7 +178,7 @@ const Profile = () => {
 
           {/* Middle Column: Basic Info */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-gray-100 dark:border-neutral-800">
+            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-blue-400 dark:border-neutral-800">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                 <UserIcon className="w-5 h-5 text-blue-500" /> Basic Information
               </h3>
@@ -161,7 +193,7 @@ const Profile = () => {
                       value={formData.firstName}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                      className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -172,7 +204,7 @@ const Profile = () => {
                       value={formData.lastName}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                      className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -186,16 +218,16 @@ const Profile = () => {
                       name="email"
                       value={formData.email}
                       disabled
-                      className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gray-100 dark:bg-neutral-800/50 border border-gray-200 dark:border-neutral-800 text-gray-500 dark:text-gray-400 cursor-not-allowed outline-none"
+                      className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gray-100 dark:bg-neutral-800/50 border border-blue-400 dark:border-neutral-800 text-gray-500 dark:text-gray-400 cursor-not-allowed outline-none"
                     />
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Email cannot be changed directly.</p>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-neutral-800">
+                <div className="pt-4 mt-4 border-t border-blue-400 dark:border-neutral-800">
                   <Link
-                    to="/forgot-password"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-700 dark:text-gray-300 font-medium transition-colors"
+                    to="/change-password"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-blue-400 dark:border-neutral-700 text-gray-700 dark:text-gray-300 font-medium transition-colors"
                   >
                     <Lock className="w-4 h-4" /> Change Password
                   </Link>
@@ -206,7 +238,7 @@ const Profile = () => {
 
           {/* Right Column: Additional Details */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-gray-100 dark:border-neutral-800 flex flex-col h-full">
+            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-blue-400 dark:border-neutral-800 flex flex-col h-full">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-red-500" /> Contact Details
               </h3>
@@ -222,7 +254,7 @@ const Profile = () => {
                       value={formData.phoneNo}
                       onChange={handleChange}
                       placeholder="+91 0000000000"
-                      className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                      className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -235,7 +267,7 @@ const Profile = () => {
                     onChange={handleChange}
                     rows="2"
                     placeholder="Enter your full address"
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all resize-none"
                   ></textarea>
                 </div>
 
@@ -250,7 +282,7 @@ const Profile = () => {
                         value={formData.city}
                         onChange={handleChange}
                         placeholder="City"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -264,31 +296,32 @@ const Profile = () => {
                         value={formData.pincode}
                         onChange={handleChange}
                         placeholder="Pincode"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
                       />
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="mt-8 pt-6 border-t border-gray-100 dark:border-neutral-800">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-6 rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" /> Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" /> Save Changes
-                    </>
-                  )}
-                </button>
-              </div>
             </div>
+          </div>
+
+          {/* Bottom Complete Form Area with Centered Button */}
+          <div className="col-span-1 lg:col-span-12 flex justify-center mt-8">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full md:w-1/3 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-10 rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 shadow-lg shadow-blue-500/30"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5 md:mr-2" /> Save Changes
+                </>
+              )}
+            </button>
           </div>
         </form>
       </div>

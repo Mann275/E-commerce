@@ -87,7 +87,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-3 text-center transition-colors">
+        <div className="border-t border-blue-400 dark:border-gray-800 pt-3 text-center transition-colors">
           <p className="text-gray-500 dark:text-gray-500 text-xs">
             © 2026 Overclocked. All rights reserved.
           </p>

@@ -10,7 +10,8 @@ import {
   resetPassword,
   allUsers,
   getUserById,
-  // updateProfile,
+  updateProfile,
+  changePassword,
 } from "../controllers/userController.js";
 import { isAdmin, isAuthenticated } from "../middleware/isAuthenticated.js";
 
@@ -24,8 +25,8 @@ router.post("/logout", isAuthenticated, logout);
 router.post("/forgotpassword", forgotPassword);
 router.post("/verify-otp/:email", verifyOTP);
 router.post("/reset-password/:email", resetPassword);
-router.get("/all-users", isAuthenticated, isAdmin, allUsers);
 router.get("/get-user/:id", getUserById);
-// router.put("/update-profile", isAuthenticated, updateProfile);
+router.put("/update-profile", isAuthenticated, updateProfile);
+router.put("/change-password", isAuthenticated, changePassword);
 
 export default router;

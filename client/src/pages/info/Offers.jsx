@@ -87,7 +87,7 @@ const Offers = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 focus:outline-none transition-colors"
+              className="flex-1 bg-white dark:bg-gray-900 border border-blue-400 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 focus:outline-none transition-colors"
             />
             <button className="bg-linear-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
               Subscribe

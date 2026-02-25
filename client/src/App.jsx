@@ -16,6 +16,7 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Verify = lazy(() => import("./pages/auth/Verify"));
 const VerifyEmail = lazy(() => import("./pages/auth/VerifyEmail"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ChangePassword = lazy(() => import("./pages/auth/ChangePassword"));
 
 // Info pages
 const About = lazy(() => import("./pages/info/About"));
@@ -100,6 +101,16 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader />}>
         <ForgotPassword />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/change-password",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <Layout>
+          <ChangePassword />
+        </Layout>
       </Suspense>
     ),
   },

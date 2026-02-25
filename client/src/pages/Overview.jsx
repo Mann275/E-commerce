@@ -76,7 +76,7 @@ const Overview = () => {
                   <img
                     src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&q=80&w=1000"
                     alt="RGB CPU"
-                    className="rounded-3xl border border-gray-200 dark:border-gray-700 shadow-2xl shadow-sky-500/20 hover:shadow-sky-500/40 transition-all duration-700"
+                    className="rounded-3xl border border-blue-400 dark:border-gray-700 shadow-2xl shadow-sky-500/20 hover:shadow-sky-500/40 transition-all duration-700"
                   />
                 </div>
 

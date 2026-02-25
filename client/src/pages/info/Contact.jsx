@@ -36,7 +36,7 @@ const Contact = () => {
                 <Input
                   type="text"
                   placeholder="Your name"
-                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 transition-colors"
+                  className="bg-white dark:bg-gray-900 border-blue-400 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 transition-colors"
                 />
               </div>
               <div>
@@ -46,7 +46,7 @@ const Contact = () => {
                 <Input
                   type="email"
                   placeholder="your@email.com"
-                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 transition-colors"
+                  className="bg-white dark:bg-gray-900 border-blue-400 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 transition-colors"
                 />
               </div>
               <div>
@@ -56,7 +56,7 @@ const Contact = () => {
                 <Input
                   type="text"
                   placeholder="How can we help?"
-                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 transition-colors"
+                  className="bg-white dark:bg-gray-900 border-blue-400 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 transition-colors"
                 />
               </div>
               <div>
@@ -66,7 +66,7 @@ const Contact = () => {
                 <textarea
                   rows={4}
                   placeholder="Your message..."
-                  className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 focus:outline-none resize-none transition-colors"
+                  className="w-full bg-white dark:bg-gray-900 border border-blue-400 dark:border-gray-700 rounded-lg p-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-sky-500 focus:outline-none resize-none transition-colors"
                 />
               </div>
               <Button className="w-full bg-linear-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white py-2 rounded-lg flex items-center justify-center gap-2">

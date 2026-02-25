@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Zap, Shield, Monitor, Sparkles } from "lucide-react";
+import { useSelector } from "react-redux";
 
 function Home() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user } = useSelector((store) => store.user);
+
 
   useEffect(() => {
     try {
@@ -31,7 +33,7 @@ function Home() {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
                 <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                  Welcome back, {user.name}
+                  Welcome back, {user.firstName}
                 </span>
               </div>
             ) : (
@@ -75,8 +77,8 @@ function Home() {
 }
 
 const FeatureBox = ({ icon, title, desc }) => (
-  <div className="p-8 bg-gray-50 dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 rounded-3xl hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-colors">
-    <div className="w-16 h-16 bg-white dark:bg-neutral-900 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 dark:border-neutral-800">
+  <div className="p-8 bg-gray-50 dark:bg-neutral-950 border border-blue-400 dark:border-neutral-800 rounded-3xl hover:border-blue-400/50 dark:hover:border-blue-400/50 transition-colors">
+    <div className="w-16 h-16 bg-white dark:bg-neutral-900 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-blue-400 dark:border-neutral-800">
       {icon}
     </div>
     <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">

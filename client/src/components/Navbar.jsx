@@ -49,10 +49,26 @@ function Navbar() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+      if (mobileMenuOpen && window.scrollY > 10) {
+        setMobileMenuOpen(false);
+      }
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
+
+  // Close drawer on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [mobileMenuOpen]);
 
   // Logout function
   const accessToken = localStorage.getItem("accesstoken");
@@ -90,7 +106,7 @@ function Navbar() {
   return (
     <header
       className={`fixed w-full z-50 transition-all duration-300 ${scrolled
-        ? "bg-black/40 dark:bg-black/60 backdrop-blur-3xl border-b border-gray-200 dark:border-white/10 shadow-sm py-2"
+        ? "bg-black/40 dark:bg-black/60 backdrop-blur-3xl border-b border-blue-400 dark:border-white/10 shadow-sm py-2"
         : "bg-transparent py-2"
         }`}
     >
@@ -116,7 +132,7 @@ function Navbar() {
 
           {/* CENTER: Desktop Nav Links (Capsule Design) */}
           <nav className="hidden lg:flex flex-1 justify-center items-center">
-            <div className="flex items-center gap-1 p-1 bg-white/70 dark:bg-neutral-900/70 border border-gray-200 dark:border-neutral-800 rounded-full shadow-sm backdrop-blur-md">
+            <div className="flex items-center gap-1 p-1 bg-white/70 dark:bg-neutral-900/70 border border-blue-400 dark:border-neutral-800 rounded-full shadow-sm backdrop-blur-md">
               <NavLink to="/" current={location.pathname === "/"}>
                 Home
               </NavLink>
@@ -164,7 +180,7 @@ function Navbar() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-2 p-1 pr-3 rounded-full bg-white/70 dark:bg-neutral-900/70 border border-gray-200 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700 transition-all focus:outline-none backdrop-blur-md"
+                    className="flex items-center gap-2 p-1 pr-3 rounded-full bg-white/70 dark:bg-neutral-900/70 border border-blue-400 dark:border-neutral-800 hover:border-gray-300 dark:hover:border-neutral-700 transition-all focus:outline-none backdrop-blur-md"
                   >
                     {user.profilePic ? (
                       <img
@@ -187,7 +203,7 @@ function Navbar() {
 
                   {/* Dropdown Menu */}
                   {dropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-neutral-800 rounded-xl shadow-lg py-1 z-50 animate-in fade-in zoom-in duration-200">
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1A1A1A] border border-blue-400 dark:border-neutral-800 rounded-xl shadow-lg py-1 z-50 animate-in fade-in zoom-in duration-200">
                       <Link
                         to="/profile"
                         onClick={() => setDropdownOpen(false)}
@@ -246,7 +262,7 @@ function Navbar() {
 
       {/* Mobile Menu overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-black/90  border-b border-gray-200 dark:border-neutral-800 shadow-xl overflow-y-auto max-h-[80vh] flex flex-col">
+        <div className="absolute top-full left-0 w-full bg-white dark:bg-black/95 border-b border-blue-400 dark:border-neutral-800 shadow-xl overflow-y-auto max-h-[80vh] flex flex-col backdrop-blur-3xl animate-in slide-in-from-top-2 duration-200">
           <div className="p-4 flex flex-col gap-2">
             <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>
               Home
@@ -257,72 +273,69 @@ function Navbar() {
             >
               Products
             </MobileNavLink>
-            {user && (
-              <MobileNavLink
-                to="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Profile
-              </MobileNavLink>
-            )}
+
           </div>
 
-          <div className="p-4 border-t border-gray-100 dark:border-neutral-900 bg-gray-50 dark:bg-neutral-950/50 mt-auto">
+          <div className="p-4 border-t border-blue-400 dark:border-neutral-900 bg-gray-50 dark:bg-neutral-950/50 mt-auto">
             {user ? (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 mb-2 px-2">
-                  {user.avatar ? (
+                  {user.profilePic ? (
                     <img
-                      src={user.avatar}
+                      src={user.profilePic}
                       alt="Profile"
-                      className="w-10 h-10 rounded-full object-cover bg-gray-200 dark:bg-zinc-800"
+                      className="w-10 h-10 rounded-full object-cover bg-gray-200 dark:bg-zinc-800 border border-blue-400"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg">
-                      {user.name?.charAt(0).toUpperCase() || "U"}
+                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg border border-blue-400">
+                      {user.firstName?.charAt(0).toUpperCase() || "U"}
                     </div>
                   )}
                   <div>
-                    <div className="font-bold text-gray-900 dark:text-white">
-                      {user.name}
+                    <div className="font-bold text-gray-900 dark:text-white capitalize">
+                      {user.firstName} {user.lastName}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      Logged in
+                    <div className="text-xs text-blue-500 font-semibold truncate max-w-[200px]">
+                      {user.email}
                     </div>
                   </div>
                 </div>
                 <button
                   onClick={() => {
-                    handleLogout();
-                    setMobileMenuOpen(false);
+                    if (window.confirm("Really want to logout?")) {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }
                   }}
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
+
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" /> Logout
-                </button>
+                <LogOut className="w-4 h-4" /> Logout
+              </button>
               </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center bg-gray-500 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center bg-[#0970e7] hover:bg-[#0479ff] text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
+          ) : (
+          <div className="flex flex-col gap-3">
+            <Link
+              to="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center bg-gray-500 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center bg-[#0970e7] hover:bg-[#0479ff] text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
+            >
+              Sign Up
+            </Link>
           </div>
+            )}
         </div>
-      )}
-    </header>
+        </div>
+  )
+}
+    </header >
   );
 }
 
