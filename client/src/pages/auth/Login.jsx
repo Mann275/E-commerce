@@ -75,6 +75,7 @@ function Login() {
         }
 
         navigate("/");
+        dispatch(setUser(res.data.user));
         toast.success(res.data.message);
       }
     } catch (error) {

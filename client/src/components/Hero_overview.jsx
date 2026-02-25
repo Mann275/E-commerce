@@ -44,7 +44,6 @@ const Hero_overview = () => {
             alt="Gaming Setup"
             className="w-full h-full object-cover opacity-60"
             loading="eager"
-            fetchpriority="high"
           />
         </div>
 
