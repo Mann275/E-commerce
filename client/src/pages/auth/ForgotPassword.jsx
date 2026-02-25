@@ -80,8 +80,9 @@ function ForgotPassword() {
     }
     try {
       setLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const res = await axios.post(
-        "http://localhost:8000/api/v1/users/forgotpassword",
+        `${API_URL}/api/v1/users/forgotpassword`,
         { email },
         {
           headers: { "Content-Type": "application/json" },
@@ -93,7 +94,11 @@ function ForgotPassword() {
       }
     } catch (error) {
       console.error("Error sending OTP:", error);
-      toast.error(error.response?.data?.message || "Failed to send OTP");
+      if (!error.response) {
+        toast.error("Server is not running or unreachable.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to send OTP");
+      }
     } finally {
       setLoading(false);
     }
@@ -108,8 +113,9 @@ function ForgotPassword() {
     }
     try {
       setLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const res = await axios.post(
-        `http://localhost:8000/api/v1/users/verify-otp/${email}`,
+        `${API_URL}/api/v1/users/verify-otp/${email}`,
         { otp },
         {
           headers: { "Content-Type": "application/json" },
@@ -121,7 +127,11 @@ function ForgotPassword() {
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      toast.error(error.response?.data?.message || "Invalid OTP");
+      if (!error.response) {
+        toast.error("Server is not running or unreachable.");
+      } else {
+        toast.error(error.response?.data?.message || "Invalid OTP");
+      }
     } finally {
       setLoading(false);
     }
@@ -144,8 +154,9 @@ function ForgotPassword() {
     }
     try {
       setLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const res = await axios.post(
-        `http://localhost:8000/api/v1/users/reset-password/${email}`,
+        `${API_URL}/api/v1/users/reset-password/${email}`,
         { newPassword, confirmPassword },
         {
           headers: { "Content-Type": "application/json" },
@@ -159,7 +170,11 @@ function ForgotPassword() {
       }
     } catch (error) {
       console.error("Error resetting password:", error);
-      toast.error(error.response?.data?.message || "Failed to reset password");
+      if (!error.response) {
+        toast.error("Server is not running or unreachable.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to reset password");
+      }
     } finally {
       setLoading(false);
     }
@@ -312,17 +327,16 @@ function ForgotPassword() {
                           Password Strength
                         </span>
                         <span
-                          className={`text-xs font-medium ${
-                            getPasswordStrength.text === "Strong"
-                              ? "text-green-400"
-                              : getPasswordStrength.text === "Good"
-                                ? "text-blue-400"
-                                : getPasswordStrength.text === "Medium"
-                                  ? "text-yellow-400"
-                                  : getPasswordStrength.text === "Weak"
-                                    ? "text-orange-400"
-                                    : "text-red-400"
-                          }`}
+                          className={`text-xs font-medium ${getPasswordStrength.text === "Strong"
+                            ? "text-green-400"
+                            : getPasswordStrength.text === "Good"
+                              ? "text-blue-400"
+                              : getPasswordStrength.text === "Medium"
+                                ? "text-yellow-400"
+                                : getPasswordStrength.text === "Weak"
+                                  ? "text-orange-400"
+                                  : "text-red-400"
+                            }`}
                         >
                           {getPasswordStrength.text}
                         </span>

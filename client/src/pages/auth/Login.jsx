@@ -49,8 +49,9 @@ function Login() {
     console.log(formData);
     try {
       setLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const res = await axios.post(
-        "http://localhost:8000/api/v1/users/login",
+        `${API_URL}/api/v1/users/login`,
         formData,
         {
           headers: { "Content-Type": "application/json" },
@@ -76,9 +77,13 @@ function Login() {
       }
     } catch (error) {
       console.error("Error during login:", error);
-      toast.error(
-        error.response?.data?.message || "An error occurred during login",
-      );
+      if (!error.response) {
+        toast.error("Server is not running or unreachable.");
+      } else {
+        toast.error(
+          error.response?.data?.message || "An error occurred during login",
+        );
+      }
     } finally {
       setLoading(false);
     }

@@ -83,8 +83,9 @@ const Signup = () => {
     console.log(formData);
     try {
       setLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const res = await axios.post(
-        "http://localhost:8000/api/v1/users/register",
+        `${API_URL}/api/v1/users/register`,
         formData,
         {
           headers: { "Content-Type": "application/json" },
@@ -96,9 +97,13 @@ const Signup = () => {
       }
     } catch (error) {
       console.error("Error during signup:", error);
-      toast.error(
-        error.response?.data?.message || "An error occurred during signup",
-      );
+      if (!error.response) {
+        toast.error("Server is not running or unreachable.");
+      } else {
+        toast.error(
+          error.response?.data?.message || "An error occurred during signup",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -230,17 +235,16 @@ const Signup = () => {
                         Password Strength
                       </span>
                       <span
-                        className={`text-xs font-medium ${
-                          getPasswordStrength.text === "Strong"
-                            ? "text-green-400"
-                            : getPasswordStrength.text === "Good"
-                              ? "text-blue-400"
-                              : getPasswordStrength.text === "Medium"
-                                ? "text-yellow-400"
-                                : getPasswordStrength.text === "Weak"
-                                  ? "text-orange-400"
-                                  : "text-red-400"
-                        }`}
+                        className={`text-xs font-medium ${getPasswordStrength.text === "Strong"
+                          ? "text-green-400"
+                          : getPasswordStrength.text === "Good"
+                            ? "text-blue-400"
+                            : getPasswordStrength.text === "Medium"
+                              ? "text-yellow-400"
+                              : getPasswordStrength.text === "Weak"
+                                ? "text-orange-400"
+                                : "text-red-400"
+                          }`}
                       >
                         {getPasswordStrength.text}
                       </span>

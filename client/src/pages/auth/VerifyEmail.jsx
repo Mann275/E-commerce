@@ -12,8 +12,9 @@ function VerifyEmail() {
 
   const verifyEmail = async () => {
     try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const res = await axios.post(
-        "http://localhost:8000/api/v1/users/verify",
+        `${API_URL}/api/v1/users/verify`,
         {},
         {
           headers: {
@@ -43,7 +44,11 @@ function VerifyEmail() {
       console.error("Error during email verification:", error);
       setStatus("❌ Verification failed. Please try again.");
       setIsVerifying(false);
-      toast.error(error.response?.data?.message || "Verification failed");
+      if (!error.response) {
+        toast.error("Server is not running or unreachable.");
+      } else {
+        toast.error(error.response?.data?.message || "Verification failed");
+      }
     }
   };
 

@@ -12,7 +12,11 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow requests from this origin
+    origin: [
+      "http://localhost:5173",
+      "https://e-commerce-lime-nu-91.vercel.app",
+      /^https:\/\/.*\.vercel\.app$/ // Allows all Vercel preview domains
+    ],
     credentials: true,
   }),
 );
