@@ -14,6 +14,8 @@ import { Eye, EyeOff, Loader, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/userSlice";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +27,7 @@ function Login() {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Load saved credentials on component mount
   React.useEffect(() => {
@@ -50,18 +53,17 @@ function Login() {
     try {
       setLoading(true);
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/login`,
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const res = await axios.post(`${API_URL}/api/v1/users/login`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
       if (res.data.success) {
         // Store tokens and user data
         localStorage.setItem("accesstoken", res.data.accesstoken);
         localStorage.setItem("refreshtoken", res.data.refreshtoken);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        // Dispatch user to Redux store
+        dispatch(setUser(res.data.user));
 
         // Handle Remember Me
         if (rememberMe) {
@@ -98,20 +100,22 @@ function Login() {
       {/* Back Button */}
       <Link
         to="/"
-        className="fixed top-6 left-6 z-50 flex items-center gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20 shadow-lg"
+        className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-1.5 md:gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-white/20 shadow-lg"
       >
-        <ArrowLeft className="w-5 h-5" />
-        <span className="font-medium">Back to Home</span>
+        <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+        <span className="font-medium text-sm md:text-base hidden sm:inline">
+          Back to Home
+        </span>
       </Link>
 
       {/* Logo */}
-      <div className="fixed top-6 right-6 z-50 flex items-center bg-transparent px-4 py-2">
+      <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50 flex items-center bg-transparent px-2 py-1 md:px-4 md:py-2">
         <img
           src="/logo.png"
           alt="OverClocked Logo"
-          className="w-25 h-25 object-contain"
+          className="w-10 h-10 md:w-16 md:h-16 object-contain"
         />
-        <span className="text-2xl font-bold text-white">
+        <span className="text-lg md:text-2xl font-bold text-white ml-2">
           Over<span className="text-sky-400">Clocked</span>
         </span>
       </div>

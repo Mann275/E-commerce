@@ -14,8 +14,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://e-commerce-lime-nu-91.vercel.app",
-      /^https:\/\/.*\.vercel\.app$/ // Allows all Vercel preview domains
+      "https://over-clocked.vercel.app/",
+      /^https:\/\/.*\.vercel\.app$/, // Allows all Vercel preview domains
     ],
     credentials: true,
   }),

@@ -49,7 +49,7 @@ const Hero = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full pt-16 md:pt-0">
           <div className="max-w-2xl">
             <div className="animate-fade-in-up">
               <div

@@ -1,5 +1,7 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, logout } from "./redux/userSlice";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -24,7 +26,7 @@ const Terms = lazy(() => import("./pages/info/Terms"));
 // Loading component
 const PageLoader = () => (
   <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center transition-colors duration-300 relative">
-    <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
+    <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
     <div className="text-center relative z-10">
       <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
       <p className="text-gray-600 dark:text-gray-400 text-lg">Loading...</p>
@@ -34,13 +36,8 @@ const PageLoader = () => (
 
 // Conditional component - shows Home if logged in, Overview if not
 const HomeOrOverview = () => {
-  const isAuthenticated = () => {
-    const user = localStorage.getItem("user");
-    const accessToken = localStorage.getItem("accesstoken");
-    return user && accessToken;
-  };
-
-  return isAuthenticated() ? <Home /> : <Overview />;
+  const { isAuthenticated } = useSelector((state) => state.user);
+  return isAuthenticated ? <Home /> : <Overview />;
 };
 
 // Layout wrapper with Navbar and Footer
@@ -156,6 +153,23 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const dispatch = useDispatch();
+
+  // Load user from localStorage on app start
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem("user");
+      const accessToken = localStorage.getItem("accesstoken");
+      if (userStr && accessToken) {
+        const user = JSON.parse(userStr);
+        dispatch(setUser(user));
+      }
+    } catch (error) {
+      console.error("Error loading user from localStorage:", error);
+      dispatch(logout());
+    }
+  }, [dispatch]);
+
   return (
     <>
       <RouterProvider router={router} />

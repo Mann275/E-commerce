@@ -9,9 +9,9 @@ import {
 
 const Overview = () => {
   return (
-    <div className="bg-slate-50 dark:bg-black min-h-screen selection:bg-sky-500/30 transition-colors duration-300 relative">
+    <div className="bg-slate-50 dark:bg-black min-h-screen selection:bg-sky-500/30 transition-colors duration-300 relative overflow-x-hidden">
       {/* Dynamic Glow Background */}
-      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
 
       <div className="relative z-10">
         <Hero />
@@ -50,7 +50,7 @@ const Overview = () => {
         </div>
 
         {/* Tech Highlights / Cool Section */}
-        <section className="py-32 relative transition-colors duration-300 flex flex-col items-center">
+        <section className="pt-24 pb-16 relative transition-colors duration-300 flex flex-col items-center">
           <div className="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl"></div>
 
           <div className="max-w-7xl mx-auto px-6 relative z-10">
