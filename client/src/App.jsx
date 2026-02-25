@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 // Lazy load all page components
 const Overview = lazy(() => import("./pages/Overview"));
 const Home = lazy(() => import("./pages/Home"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 // Auth pages
 const Signup = lazy(() => import("./pages/auth/Signup"));
@@ -56,6 +57,16 @@ const router = createBrowserRouter([
       <Suspense fallback={<PageLoader />}>
         <Layout>
           <HomeOrOverview />
+        </Layout>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <Layout>
+          <Profile />
         </Layout>
       </Suspense>
     ),

@@ -410,3 +410,36 @@ export const getUserById = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { firstName, lastName, phoneNo, address, city, pincode, profilePic } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (phoneNo !== undefined) user.phoneNo = phoneNo;
+    if (address !== undefined) user.address = address;
+    if (city !== undefined) user.city = city;
+    if (pincode !== undefined) user.pincode = pincode;
+    if (profilePic) user.profilePic = profilePic;
+
+    await user.save();
+
+    // Create a user object without sensitive info
+    const updatedUser = await User.findById(userId).select("-password -otp -otpExpiry -token");
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

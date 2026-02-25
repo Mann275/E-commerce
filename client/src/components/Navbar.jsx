@@ -89,11 +89,10 @@ function Navbar() {
 
   return (
     <header
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-black/40 dark:bg-black/60 backdrop-blur-3xl border-b border-gray-200 dark:border-white/10 shadow-sm py-2"
-          : "bg-transparent py-2"
-      }`}
+      className={`fixed w-full z-50 transition-all duration-300 ${scrolled
+        ? "bg-black/40 dark:bg-black/60 backdrop-blur-3xl border-b border-gray-200 dark:border-white/10 shadow-sm py-2"
+        : "bg-transparent py-2"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-12 md:h-14 gap-2">
@@ -127,14 +126,7 @@ function Navbar() {
               >
                 Products
               </NavLink>
-              {user && (
-                <NavLink
-                  to="/profile"
-                  current={location.pathname === "/profile"}
-                >
-                  Profile
-                </NavLink>
-              )}
+
             </div>
           </nav>
 
@@ -338,11 +330,10 @@ function Navbar() {
 const NavLink = ({ to, children, current }) => (
   <Link
     to={to}
-    className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ${
-      current
-        ? "bg-white dark:bg-[#2A2A2A] text-black dark:text-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-none"
-        : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/5"
-    }`}
+    className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ${current
+      ? "bg-white dark:bg-[#2A2A2A] text-black dark:text-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-none"
+      : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/5"
+      }`}
   >
     {children}
   </Link>
