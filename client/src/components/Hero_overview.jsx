@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowRight, Sparkles, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Hero = () => {
+const Hero_overview = () => {
   return (
     <>
       <style>{`
@@ -36,7 +36,7 @@ const Hero = () => {
       <section className="relative h-screen w-full overflow-hidden flex items-center bg-linear-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Background Image / Glow */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-linear-to-r from-gray-900/95 via-gray-900/80 to-transparent z-10" />
+          <div className="absolute inset-0 bg-linear-to-r from-gray-900/90 via-gray-900/50 to-transparent z-10" />
           <img
             src="https://images.unsplash.com/photo-1761131828541-33e7b1167cc2?q=75&w=1920&auto=format&fit=crop"
             // src="https://images.unsplash.com/photo-1761131745229-763bffe31248?q=75&w=1920&auto=format&fit=crop"
@@ -110,4 +110,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default Hero_overview;

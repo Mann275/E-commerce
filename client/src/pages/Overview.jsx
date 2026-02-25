@@ -1,11 +1,7 @@
 import React from "react";
-import Hero from "../components/Hero_overview";
+import Hero_overview from "../components/Hero_overview";
 import FeaturedCategories from "../components/FeaturedCategories";
-import {
-  Cpu,
-  TrendingUp,
-  Package,
-} from "lucide-react";
+import { Cpu, TrendingUp, Package } from "lucide-react";
 
 const Overview = () => {
   return (
@@ -14,7 +10,7 @@ const Overview = () => {
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
 
       <div className="relative z-10">
-        <Hero />
+        <Hero_overview />
 
         {/* CSS for custom RGB glowing line animation */}
         <style>{`
@@ -100,10 +96,14 @@ const Overview = () => {
           </div>
           <div className="max-w-7xl mx-auto px-6 text-center mt-20 relative z-10">
             <h2 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tighter">
-              WHY CHOOSE <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-400 to-blue-600 pr-2 pb-1">OVERCLOCKED ?</span>
+              WHY CHOOSE{" "}
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-400 to-blue-600 pr-2 pb-1">
+                OVERCLOCKED ?
+              </span>
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-3xl mx-auto font-medium italic">
-              "Built by gamers, for gamers. We don't just sell hardware; we fuel your passion for peak performance."
+              "Built by gamers, for gamers. We don't just sell hardware; we fuel
+              your passion for peak performance."
             </p>
           </div>
 
@@ -141,28 +141,32 @@ const Overview = () => {
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm transition-colors">{item.desc}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm transition-colors">
+                    {item.desc}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </section>
         <div className="h-1 w-full animate-rgb-line"></div>
-
       </div>
     </div>
   );
 };
 
 const TechStat = ({ number, label }) => (
-  <div className="border border-sky-900/60
- dark:border-sky-800/50 bg-white/80 dark:bg-gray-900/40 p-4 rounded-xl hover:border-sky-400/60 dark:hover:border-sky-500/60 hover:bg-white dark:hover:bg-gray-900/80 transition-all backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.6)]">
-    <div className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-1 transition-colors">{number}</div>
+  <div
+    className="border border-sky-900/60
+ dark:border-sky-800/50 bg-white/80 dark:bg-gray-900/40 p-4 rounded-xl hover:border-sky-400/60 dark:hover:border-sky-500/60 hover:bg-white dark:hover:bg-gray-900/80 transition-all backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.6)]"
+  >
+    <div className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-1 transition-colors">
+      {number}
+    </div>
     <div className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider font-bold transition-colors">
       {label}
     </div>
   </div>
 );
-
 
 export default Overview;

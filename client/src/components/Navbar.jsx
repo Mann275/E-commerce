@@ -216,14 +216,14 @@ function Navbar() {
                     to="/login"
                     className="relative group px-5 py-2 font-bold texk:black dark:text-white rounded-full overflow-hidden shadow-lg"
                   >
-                    <div className="absolute inset-0 bg-linear-to-r   to-blue-600 transition-transform group-hover:scale-105"></div>
+                    <div className="absolute inset-0 bg-linear-to-r  from-sky-500/20 to-blue-600 transition-transform group-hover:scale-105"></div>
                     <span className="relative z-10">Login</span>
                   </Link>
                   <Link
                     to="/signup"
                     className="relative group px-5 py-2 font-bold texk:black dark:text-white rounded-full overflow-hidden shadow-lg"
                   >
-                    <div className="absolute inset-0 bg-linear-to-r from-sky-700 to-blue-600 transition-transform group-hover:scale-105"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-sky-700/20 to-blue-600 transition-transform group-hover:scale-105"></div>
                     <span className="relative z-10">Sign Up</span>
                   </Link>
                 </>
