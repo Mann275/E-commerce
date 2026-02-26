@@ -22,6 +22,28 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    quantity: {
+      type: Number,
+      default: 0,
+    },
+    discountPercentage: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0
+    },
+    reviews: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
     productImg: [
       {
         url: { type: String, required: true },

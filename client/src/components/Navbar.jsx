@@ -8,6 +8,9 @@ import {
   Moon,
   LogOut,
   User as UserIcon,
+  Heart,
+  MessageCircle,
+  Package
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -25,6 +28,8 @@ function Navbar() {
 
   // Get user from Redux store
   const { user } = useSelector((store) => store.user);
+  const { cartItems } = useSelector((store) => store.cart);
+  const { wishlistItems } = useSelector((store) => store.wishlist);
 
   // Handle outside click for dropdown
   useEffect(() => {
@@ -136,12 +141,22 @@ function Navbar() {
               <NavLink to="/" current={location.pathname === "/"}>
                 Home
               </NavLink>
-              <NavLink
-                to="/products"
-                current={location.pathname.toLowerCase() === "/products"}
-              >
-                Products
-              </NavLink>
+              {(!user || user.role === "customer") && (
+                <NavLink
+                  to="/products"
+                  current={location.pathname.toLowerCase() === "/products"}
+                >
+                  Products
+                </NavLink>
+              )}
+              {user?.role === "seller" && (
+                <NavLink
+                  to="/dashboard"
+                  current={location.pathname.toLowerCase() === "/dashboard"}
+                >
+                  Dashboard
+                </NavLink>
+              )}
             </div>
           </nav>
 
@@ -160,15 +175,29 @@ function Navbar() {
               )}
             </button>
 
+            {/* Wishlist */}
+            {user?.role === "customer" && (
+              <Link
+                to="/wishlist"
+                className="relative p-1.5 md:p-2 rounded-full text-gray-700 hover:text-rose-500 hover:bg-rose-50 dark:text-gray-300 dark:hover:text-rose-500 dark:hover:bg-rose-500/10 transition-colors w-10 h-10 flex items-center justify-center mr-1 md:mr-2 group"
+                title="Wishlist"
+              >
+                <Heart className="w-5 h-5 md:w-5 md:h-5 group-hover:fill-rose-500/20 transition-all" />
+                <span className="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center border border-white dark:border-black shadow-sm">
+                  {wishlistItems?.length || 0}
+                </span>
+              </Link>
+            )}
+
             {/* Cart - Only visible when logged in */}
-            {user && (
+            {user?.role === "customer" && (
               <Link
                 to="/cart"
-                className="relative p-1.5 md:p-2 rounded-full text-gray-700 hover:text-black hover:bg-gray-200 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors mr-2"
+                className="relative p-1.5 md:p-2 rounded-full text-gray-700 hover:text-black hover:bg-gray-200 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors mr-2 w-10 h-10 flex items-center justify-center"
               >
                 <ShoppingCart className="w-5 h-5 md:w-5 md:h-5" />
-                <span className="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-white dark:border-black">
-                  0
+                <span className="absolute top-0 right-0 bg-sky-500 text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center border border-white dark:border-black shadow-sm">
+                  {cartItems?.length || 0}
                 </span>
               </Link>
             )}
@@ -195,7 +224,7 @@ function Navbar() {
                     )}
                     <span className="text-sm font-semibold text-black dark:text-gray-200 max-w-25 truncate underline decoration-blue-500 decoration-1 underline-offset-4">
                       {user.firstName}
-                      <div className="text-xs text-blue-700 dark:text-blue-500 font-medium">
+                      <div className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]'}`}>
                         {user.role}
                       </div>
                     </span>
@@ -211,6 +240,15 @@ function Navbar() {
                       >
                         <UserIcon className="w-4 h-4" /> My Profile
                       </Link>
+                      {user?.role === "customer" && (
+                        <Link
+                          to="/my-orders"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                        >
+                          <Package className="w-4 h-4" /> My Orders
+                        </Link>
+                      )}
                       <div className="h-px bg-gray-200 dark:bg-neutral-800 my-1"></div>
                       <button
                         onClick={() => {
@@ -267,12 +305,21 @@ function Navbar() {
             <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>
               Home
             </MobileNavLink>
-            <MobileNavLink
-              to="/products"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Products
-            </MobileNavLink>
+            {user?.role === "seller" ? (
+              <MobileNavLink
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Dashboard
+              </MobileNavLink>
+            ) : (
+              <MobileNavLink
+                to="/products"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Products
+              </MobileNavLink>
+            )}
           </div>
 
           <div className="p-4 border-t border-blue-400 dark:border-neutral-900 bg-gray-50 dark:bg-neutral-950/50 mt-auto">
@@ -296,14 +343,26 @@ function Navbar() {
                     </div>
                   )}
                   <div>
-                    <div className="font-bold text-gray-900 dark:text-white capitalize">
+                    <div className="font-bold text-gray-900 dark:text-white capitalize underline decoration-blue-500 decoration-1 underline-offset-4">
                       {user.firstName} {user.lastName}
                     </div>
-                    <div className="text-xs text-blue-500 font-semibold truncate max-w-50]">
+                    <div className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]'}`}>
+                      {user.role}
+                    </div>
+                    <div className="text-xs text-blue-500 font-semibold truncate max-w-[200px] mt-1">
                       {user.email}
                     </div>
                   </div>
                 </Link>
+                {user?.role === "customer" && (
+                  <Link
+                    to="/my-orders"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full bg-white dark:bg-neutral-900 border border-blue-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 text-gray-700 dark:text-gray-300 font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
+                  >
+                    <Package className="w-4 h-4" /> My Orders
+                  </Link>
+                )}
                 <button
                   onClick={() => {
                     if (window.confirm("Really want to logout?")) {

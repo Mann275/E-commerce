@@ -1,8 +1,24 @@
+
 import { createSlice } from "@reduxjs/toolkit";
 
+const getUserFromLocalStorage = () => {
+  try {
+    const userStr = localStorage.getItem("user");
+    const token = localStorage.getItem("accesstoken");
+    if (userStr && token) {
+      return JSON.parse(userStr);
+    }
+  } catch (error) {
+    console.error("Failed to parse user from local storage:", error);
+  }
+  return null;
+};
+
+const initialUser = getUserFromLocalStorage();
+
 const initialState = {
-  user: null,
-  isAuthenticated: false,
+  user: initialUser,
+  isAuthenticated: !!initialUser,
 };
 
 const userSlice = createSlice({

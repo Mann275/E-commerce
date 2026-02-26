@@ -235,13 +235,24 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                       <h1
                         style="
                           margin: 0;
-                          color: #00ff88;
+                          color: #ffffffff;
                           font-size: 22px;
                           font-weight: 700;
-                          text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+                          text-shadow: 0 0 20px rgba(124, 135, 130, 0.5);
                         "
                       >
-                        OverClocked
+                        Over
+                      </h1>
+                      <h1
+                        style="
+                          margin: 0;
+                          color: #0084ffff;
+                          font-size: 22px;
+                          font-weight: 700;
+                          text-shadow: 0 0 20px rgba(11, 95, 144, 0.5);
+                        "
+                      >
+                        Clocked
                       </h1>
                       <p
                         style="

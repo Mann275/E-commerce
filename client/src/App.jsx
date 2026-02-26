@@ -1,16 +1,21 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser, logout } from "./redux/userSlice";
+import { useSelector } from "react-redux";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
 import { ProtectedRoute, PublicOnlyRoute } from "./components/RouteGuards";
+import SellerDashboard from "./pages/seller/SellerDashboard";
 
 // Lazy load all page components
 const Overview = lazy(() => import("./pages/Overview"));
 const Home = lazy(() => import("./pages/Home"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Products = lazy(() => import("./pages/customer/Products"));
+const ProductDetails = lazy(() => import("./pages/customer/ProductDetails"));
+const Cart = lazy(() => import("./pages/customer/Cart"));
+const Wishlist = lazy(() => import("./pages/customer/Wishlist"));
+const SellerProfile = lazy(() => import("./pages/seller/SellerProfile"));
 
 // Auth pages
 const Signup = lazy(() => import("./pages/auth/Signup"));
@@ -70,6 +75,77 @@ const router = createBrowserRouter([
         <ProtectedRoute>
           <Layout>
             <Profile />
+          </Layout>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/products",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <ProtectedRoute allowedRoles={["customer"]}>
+          <Layout>
+            <Products />
+          </Layout>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/product/:id",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <ProtectedRoute allowedRoles={["customer"]}>
+          <Layout>
+            <ProductDetails />
+          </Layout>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/sellerinfo/:id",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <Layout>
+          <SellerProfile />
+        </Layout>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <ProtectedRoute allowedRoles={["seller"]}>
+          <Layout>
+            <SellerDashboard />
+          </Layout>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/wishlist",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <ProtectedRoute allowedRoles={["customer"]}>
+          <Layout>
+            <Wishlist />
+          </Layout>
+        </ProtectedRoute>
+      </Suspense>
+    ),
+  },
+
+  {
+    path: "/cart",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <ProtectedRoute allowedRoles={["customer"]}>
+          <Layout>
+            <Cart />
           </Layout>
         </ProtectedRoute>
       </Suspense>
@@ -179,22 +255,7 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const dispatch = useDispatch();
-
-  // Load user from localStorage on app start
-  useEffect(() => {
-    try {
-      const userStr = localStorage.getItem("user");
-      const accessToken = localStorage.getItem("accesstoken");
-      if (userStr && accessToken) {
-        const user = JSON.parse(userStr);
-        dispatch(setUser(user));
-      }
-    } catch (error) {
-      console.error("Error loading user from localStorage:", error);
-      dispatch(logout());
-    }
-  }, [dispatch]);
+  // Authentication state is now initialized synchronously in Redux userSlice
 
   return (
     <>

@@ -65,6 +65,14 @@ const userSchema = new mongoose.Schema(
     phoneNo: {
       type: String,
     },
+    showPhone: {
+      type: Boolean,
+      default: true,
+    },
+    showEmail: {
+      type: Boolean,
+      default: true,
+    }
   },
   { timestamps: true },
 );

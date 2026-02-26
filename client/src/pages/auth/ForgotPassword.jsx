@@ -50,7 +50,8 @@ function ForgotPassword() {
   }, []);
 
   const isPasswordValid = useMemo(() => {
-    return passwordRequirements.every((req) => req.test(newPassword));
+    const validCount = passwordRequirements.filter((req) => req.test(newPassword)).length;
+    return validCount >= 3;
   }, [newPassword, passwordRequirements]);
 
   const getPasswordStrength = useMemo(() => {

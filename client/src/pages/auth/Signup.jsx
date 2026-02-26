@@ -43,7 +43,8 @@ const Signup = () => {
   }, []);
 
   const isPasswordValid = useMemo(() => {
-    return passwordRequirements.every((req) => req.test(formData.password));
+    const validCount = passwordRequirements.filter((req) => req.test(formData.password)).length;
+    return validCount >= 3;
   }, [formData.password, passwordRequirements]);
 
   const getPasswordStrength = useMemo(() => {

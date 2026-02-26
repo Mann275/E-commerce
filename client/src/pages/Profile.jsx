@@ -37,6 +37,8 @@ const Profile = () => {
     city: user?.city || "",
     profilePic: user?.profilePic || "",
     role: user?.role || "",
+    showEmail: user?.showEmail !== false,
+    showPhone: user?.showPhone !== false,
   });
 
   const [file, setFile] = useState(null);
@@ -148,6 +150,8 @@ const Profile = () => {
       updateUser.address !== (user.address || "") ||
       updateUser.city !== (user.city || "") ||
       updateUser.pincode !== (user.pincode || "") ||
+      updateUser.showEmail !== (user.showEmail !== false) ||
+      updateUser.showPhone !== (user.showPhone !== false) ||
       file !== null || // New picture uploaded
       updateUser.profilePic === ""; // Picture removed
 
@@ -179,6 +183,8 @@ const Profile = () => {
       formData.append("address", updateUser.address);
       formData.append("city", updateUser.city);
       formData.append("pincode", updateUser.pincode);
+      formData.append("showEmail", updateUser.showEmail);
+      formData.append("showPhone", updateUser.showPhone);
       if (file) {
         formData.append("file", file);
       } else if (updateUser.profilePic === "") {
@@ -276,7 +282,7 @@ const Profile = () => {
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white capitalize">
                   {updateUser.firstName} {updateUser.lastName}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className={`text-sm tracking-widest font-bold uppercase mt-1 ${updateUser.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_12px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_12px_rgba(14,165,233,0.8)]'}`}>
                   {updateUser.role}
                 </p>
               </div>
@@ -321,9 +327,20 @@ const Profile = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email Address
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Email Address
+                    </label>
+                    {user?.role === "seller" && (
+                      <button
+                        type="button"
+                        onClick={() => setUpdateUser(prev => ({ ...prev, showEmail: !prev.showEmail }))}
+                        className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                      >
+                        {updateUser.showEmail ? <><Eye size={14} /> Public</> : <><EyeOff size={14} /> Hidden</>}
+                      </button>
+                    )}
+                  </div>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
@@ -361,9 +378,20 @@ const Profile = () => {
 
               <div className="space-y-4 flex-1">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Phone Number
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Phone Number
+                    </label>
+                    {user?.role === "seller" && (
+                      <button
+                        type="button"
+                        onClick={() => setUpdateUser(prev => ({ ...prev, showPhone: !prev.showPhone }))}
+                        className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                      >
+                        {updateUser.showPhone ? <><Eye size={14} /> Public</> : <><EyeOff size={14} /> Hidden</>}
+                      </button>
+                    )}
+                  </div>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input

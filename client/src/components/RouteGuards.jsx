@@ -10,8 +10,14 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
     }
 
     if (allowedRoles && (!user || !allowedRoles.includes(user.role))) {
+        if (user?.role === "seller") {
+            return <Navigate to="/dashboard" replace />;
+        }
         return <Navigate to="/" replace />;
     }
+
+    // Role-specific landing: If a seller hits the root '/' but they should be on dashboard
+    // We handle it in the router or let them access Home but not Cart/Products.
 
     return children;
 };

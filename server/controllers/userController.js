@@ -21,35 +21,18 @@ export const register = async (req, res) => {
         .json({ success: false, message: "User already exists" });
     }
 
-    // Password validation
-    if (password.length < 8) {
+    // Password validation (require 3 out of 5 conditions)
+    let validConditions = 0;
+    if (password.length >= 8) validConditions++;
+    if (/[A-Z]/.test(password)) validConditions++;
+    if (/[a-z]/.test(password)) validConditions++;
+    if (/\d/.test(password)) validConditions++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) validConditions++;
+
+    if (validConditions < 3) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
-      });
-    }
-    if (!/[A-Z]/.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one uppercase letter",
-      });
-    }
-    if (!/[a-z]/.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one lowercase letter",
-      });
-    }
-    if (!/\d/.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one number",
-      });
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one special character",
+        message: "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
       });
     }
 
@@ -338,35 +321,18 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    // Password validation
-    if (newPassword.length < 8) {
+    // Password validation (require 3 out of 5 conditions)
+    let validConditions = 0;
+    if (newPassword.length >= 8) validConditions++;
+    if (/[A-Z]/.test(newPassword)) validConditions++;
+    if (/[a-z]/.test(newPassword)) validConditions++;
+    if (/\d/.test(newPassword)) validConditions++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) validConditions++;
+
+    if (validConditions < 3) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
-      });
-    }
-    if (!/[A-Z]/.test(newPassword)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one uppercase letter",
-      });
-    }
-    if (!/[a-z]/.test(newPassword)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one lowercase letter",
-      });
-    }
-    if (!/\d/.test(newPassword)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one number",
-      });
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one special character",
+        message: "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
       });
     }
 
@@ -450,32 +416,20 @@ export const changePassword = async (req, res) => {
       });
     }
 
-    // Password validation
-    if (newPassword.length < 8)
+    // Password validation (require 3 out of 5 conditions)
+    let validConditions = 0;
+    if (newPassword.length >= 8) validConditions++;
+    if (/[A-Z]/.test(newPassword)) validConditions++;
+    if (/[a-z]/.test(newPassword)) validConditions++;
+    if (/\d/.test(newPassword)) validConditions++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) validConditions++;
+
+    if (validConditions < 3) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
+        message: "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
       });
-    if (!/[A-Z]/.test(newPassword))
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one uppercase letter",
-      });
-    if (!/[a-z]/.test(newPassword))
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one lowercase letter",
-      });
-    if (!/\d/.test(newPassword))
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one number",
-      });
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword))
-      return res.status(400).json({
-        success: false,
-        message: "Password must contain at least one special character",
-      });
+    }
 
     const hashedPassword = await bcrypt.hash(newPassword, 11);
     user.password = hashedPassword;
@@ -493,7 +447,7 @@ export const updateUser = async (req, res) => {
   try {
     const userIdToUpdate = req.params.id;
     const loggedInUserId = req.id;
-    const { firstName, lastName, phoneNo, address, city, pincode, role } =
+    const { firstName, lastName, phoneNo, address, city, pincode, role, showPhone, showEmail } =
       req.body;
 
     const loggedInUser = await User.findById(loggedInUserId);
@@ -551,6 +505,11 @@ export const updateUser = async (req, res) => {
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.phoneNo = phoneNo !== undefined ? phoneNo : user.phoneNo;
+
+    // Privacy toggles (can be literal false so we use explicit checking)
+    if (showPhone !== undefined) user.showPhone = showPhone === 'true' || showPhone === true;
+    if (showEmail !== undefined) user.showEmail = showEmail === 'true' || showEmail === true;
+
     user.address = address !== undefined ? address : user.address;
     user.city = city !== undefined ? city : user.city;
     user.pincode = pincode !== undefined ? pincode : user.pincode;
