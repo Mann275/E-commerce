@@ -17,11 +17,12 @@ const Footer = () => {
           {/* Brand Column */}
           <div>
             <Link to="/" className="flex items-center mb-2">
-              <div className="flex items-center ">
+              <div className="flex items-center gap-2 group cursor-pointer w-fit">
                 <img
-                  src="/logo.png"
-                  alt="OverClocked Logo"
-                  className="w-17 h-17 object-contain"
+                  src="https://res.cloudinary.com/mann2729/image/upload/v1772097164/logo_xdduls.png"
+                  
+                  alt="Logo"
+                  className="w-7 h-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-transform group-hover:scale-110"
                 />
                 <span className="text-xl font-bold text-gray-900 dark:text-white transition-colors">
                   Over<span className="text-sky-500 dark:text-sky-400">Clocked</span>

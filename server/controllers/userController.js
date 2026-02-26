@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { verifyEmail } from "../utils/verifyEmail.js";
 import Session from "../models/sessionModel.js";
 import { otpmail } from "../utils/otpmail.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
   try {
@@ -411,76 +412,158 @@ export const getUserById = async (req, res) => {
   }
 };
 
-export const updateProfile = async (req, res) => {
-  try {
-    const userId = req.id;
-    const { firstName, lastName, phoneNo, address, city, pincode, profilePic } = req.body;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (phoneNo !== undefined) user.phoneNo = phoneNo;
-    if (address !== undefined) user.address = address;
-    if (city !== undefined) user.city = city;
-    if (pincode !== undefined) user.pincode = pincode;
-    if (profilePic) user.profilePic = profilePic;
-
-    await user.save();
-
-    // Create a user object without sensitive info
-    const updatedUser = await User.findById(userId).select("-password -otp -otpExpiry -token");
-
-    return res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      user: updatedUser,
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
-  }
-};
-
 export const changePassword = async (req, res) => {
   try {
     const userId = req.id;
     const { oldPassword, newPassword, confirmPassword } = req.body;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
     if (!oldPassword || !newPassword || !confirmPassword) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) return res.status(400).json({ success: false, message: "Incorrect old password" });
+    if (!isMatch)
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect old password" });
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ success: false, message: "New passwords do not match" });
+      return res
+        .status(400)
+        .json({ success: false, message: "New passwords do not match" });
     }
 
     // Checking if new password is same as old
     const isSameAsOld = await bcrypt.compare(newPassword, user.password);
     if (isSameAsOld) {
-      return res.status(400).json({ success: false, message: "New password cannot be same as old password" });
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be same as old password",
+      });
     }
 
     // Password validation
-    if (newPassword.length < 8) return res.status(400).json({ success: false, message: "Password must be at least 8 characters long" });
-    if (!/[A-Z]/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one uppercase letter" });
-    if (!/[a-z]/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one lowercase letter" });
-    if (!/\d/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one number" });
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) return res.status(400).json({ success: false, message: "Password must contain at least one special character" });
+    if (newPassword.length < 8)
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    if (!/[A-Z]/.test(newPassword))
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one uppercase letter",
+      });
+    if (!/[a-z]/.test(newPassword))
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one lowercase letter",
+      });
+    if (!/\d/.test(newPassword))
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one number",
+      });
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword))
+      return res.status(400).json({
+        success: false,
+        message: "Password must contain at least one special character",
+      });
 
     const hashedPassword = await bcrypt.hash(newPassword, 11);
     user.password = hashedPassword;
     await user.save();
 
-    return res.status(200).json({ success: true, message: "Password changed successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+    const userIdToUpdate = req.params.id;
+    const loggedInUserId = req.id;
+    const { firstName, lastName, phoneNo, address, city, pincode, role } =
+      req.body;
+
+    const loggedInUser = await User.findById(loggedInUserId);
+    if (!loggedInUser) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
+    if (
+      loggedInUser._id.toString() !== userIdToUpdate &&
+      loggedInUser.role !== "admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to update this user",
+      });
+    }
+    let user = await User.findById(userIdToUpdate);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    let profilePicUrl = user.profilePic;
+    let profilePicPublicId = user.profilePicPublicId;
+
+    if (req.file) {
+      if (profilePicPublicId) {
+        await cloudinary.uploader.destroy(profilePicPublicId);
+      }
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "Overclocked/ProfilePic" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+        uploadStream.end(req.file.buffer);
+      });
+      profilePicUrl = uploadResult.secure_url;
+      profilePicPublicId = uploadResult.public_id;
+    } else if (req.body.profilePic === "") {
+      if (profilePicPublicId) {
+        await cloudinary.uploader.destroy(profilePicPublicId);
+      }
+      profilePicUrl = "";
+      profilePicPublicId = "";
+    }
+    // Updating fields
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phoneNo = phoneNo !== undefined ? phoneNo : user.phoneNo;
+    user.address = address !== undefined ? address : user.address;
+    user.city = city !== undefined ? city : user.city;
+    user.pincode = pincode !== undefined ? pincode : user.pincode;
+    user.role = role || user.role;
+    user.profilePic = profilePicUrl;
+    user.profilePicPublicId = profilePicPublicId;
+
+    const updatedUser = await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

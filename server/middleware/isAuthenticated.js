@@ -62,3 +62,14 @@ export const isSeller = async (req, res, next) => {
     });
   }
 };
+
+export const isAdminOrSeller = async (req, res, next) => {
+  if (req.user && (req.user.role === "admin" || req.user.role === "seller")) {
+    next();
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: "Access denied. Admins or sellers only.",
+    });
+  }
+};

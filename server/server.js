@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config";
 import connectDB from "./Database/db.js";
 import userRoute from "./routes/userRoute.js";
+import productRoute from "./routes/productRoute.js";
 import cors from "cors";
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(
 
 // localhost:8000/api/v1/users/
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/products", productRoute);
 
 app.listen(PORT, () => {
   connectDB();

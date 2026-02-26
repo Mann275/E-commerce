@@ -12,7 +12,7 @@ const About = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="w-16 h-16rounded-xl flex items-center justify-center mx-auto mb-6">
-            <img src="./public/logo.png" alt="🙂" />
+            <img src="https://res.cloudinary.com/mann2729/image/upload/v1772097164/logo_xdduls.png" alt="🙂" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">
             About OverClocked

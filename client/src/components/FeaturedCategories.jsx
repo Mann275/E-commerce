@@ -16,7 +16,7 @@ const categories = [
     desc: "RTX 50-Series & More",
     gradient: "from-pink-500 to-rose-600",
     image:
-      "https://images.unsplash.com/photo-1727176763565-1d983341bb95?w=400&auto=format&fit=crop&q=60",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772097424/photo-1727176763565-1d983341bb95_ybcltm.jpg",
   },
   {
     name: "Processors",
@@ -24,7 +24,7 @@ const categories = [
     desc: "Intel & AMD Latest Gen",
     gradient: "from-indigo-700 to-violet-800",
     image:
-      "https://images.unsplash.com/photo-1555617981-dac3880eac6e?w=400&auto=format&fit=crop&q=60",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772097435/photo-1555617981-dac3880eac6e_awpznj.jpg",
   },
   {
     name: "RGB Fans",
@@ -32,7 +32,7 @@ const categories = [
     desc: "Cooling with RGB Lighting",
     gradient: "from-red-500 via-green-500 to-blue-500",
     image:
-      "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&auto=format&fit=crop&q=60",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772097455/photo-1587202372634-32705e3bf49c_qlp8cy.jpg",
   },
   {
     name: "Motherboards",
@@ -40,7 +40,7 @@ const categories = [
     desc: "Premium Gaming Boards",
     gradient: "from-orange-500 to-red-600",
     image:
-      "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=400&auto=format&fit=crop&q=60",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772097471/photo-1591799264318-7e6ef8ddb7ea_xipwzf.jpg",
   },
   {
     name: "Memory",
@@ -48,7 +48,7 @@ const categories = [
     desc: "DDR5 High Speed RAM",
     gradient: "from-emerald-700 to-green-800",
     image:
-      "https://images.unsplash.com/photo-1541029071515-84cc54f84dc5?w=400&auto=format&fit=crop&q=60",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772097485/photo-1541029071515-84cc54f84dc5_b043r7.jpg",
   },
   {
     name: "Storage",
@@ -56,7 +56,7 @@ const categories = [
     desc: "NVMe SSDs & HDDs",
     gradient: "from-slate-700 to-slate-900",
     image:
-      "https://images.unsplash.com/photo-1597138804456-e7dca7f59d54?w=400&auto=format&fit=crop&q=60",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772098372/photo-1597138804456-e7dca7f59d54_rmhmlz.jpg",
   },
 ];
 

@@ -38,8 +38,8 @@ const Hero_overview = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-linear-to-r from-gray-900/90 via-gray-900/50 to-transparent z-10" />
           <img
-            src="https://images.unsplash.com/photo-1761131828541-33e7b1167cc2?q=75&w=1920&auto=format&fit=crop"
-            // src="https://images.unsplash.com/photo-1761131745229-763bffe31248?q=75&w=1920&auto=format&fit=crop"
+            src="https://res.cloudinary.com/mann2729/image/upload/v1772097179/photo-1761131828541-33e7b1167cc2_ouzdf1.jpg"
+            // src="https://res.cloudinary.com/mann2729/image/upload/v1772097197/photo-1761131745229-763bffe31248_tq1qsl.jpg"
 
             alt="Gaming Setup"
             className="w-full h-full object-cover opacity-60"

@@ -1,8 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 function Verify() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!location.state?.fromSignup) {
+      navigate("/signup", { replace: true });
+    }
+  }, [location, navigate]);
+
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-linear-to-br from-slate-900 via-green-900 to-slate-900">
       {/* Animated Background Pattern */}
@@ -21,7 +30,7 @@ function Verify() {
       {/* Logo */}
       <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50 flex items-center bg-transparent px-2 py-1 md:px-4 md:py-2">
         <img
-          src="/logo.png"
+          src="https://res.cloudinary.com/mann2729/image/upload/v1772097164/logo_xdduls.png"
           alt="OverClocked Logo"
           className="w-10 h-10 md:w-16 md:h-16 object-contain"
         />

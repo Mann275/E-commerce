@@ -74,7 +74,7 @@ function VerifyEmail() {
       {/* Logo */}
       <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50 flex items-center bg-transparent px-2 py-1 md:px-4 md:py-2">
         <img
-          src="/logo.png"
+          src="https://res.cloudinary.com/mann2729/image/upload/v1772097164/logo_xdduls.png"
           alt="OverClocked Logo"
           className="w-10 h-10 md:w-16 md:h-16 object-contain"
         />

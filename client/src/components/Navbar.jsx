@@ -115,7 +115,7 @@ function Navbar() {
           {/* LEFT: Logo Section */}
           <Link to="/" className="flex items-center gap-1.5 group shrink-0">
             <img
-              src="/logo.png"
+              src="https://res.cloudinary.com/mann2729/image/upload/v1772097164/logo_xdduls.png"
               alt="Logo"
               className="w-7 h-7 md:w-8 md:h-8 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.1)] transition-transform group-hover:scale-105"
               onError={(e) => {
@@ -142,7 +142,6 @@ function Navbar() {
               >
                 Products
               </NavLink>
-
             </div>
           </nav>
 
@@ -186,10 +185,11 @@ function Navbar() {
                       <img
                         src={user.profilePic}
                         alt="Profile"
+                        loading="lazy"
                         className="w-7 h-7 rounded-full object-cover bg-gray-200 dark:bg-zinc-800"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs ">
+                      <div className="w-7 h-7 rounded-full bg-linear-to-tr from-sky-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-inner shadow-black/20">
                         {user.firstName?.charAt(0).toUpperCase() || "U"}
                       </div>
                     )}
@@ -205,7 +205,7 @@ function Navbar() {
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1A1A1A] border border-blue-400 dark:border-neutral-800 rounded-xl shadow-lg py-1 z-50 animate-in fade-in zoom-in duration-200">
                       <Link
-                        to="/profile"
+                        to={`/profile/${user._id}`}
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
                       >
@@ -273,21 +273,25 @@ function Navbar() {
             >
               Products
             </MobileNavLink>
-
           </div>
 
           <div className="p-4 border-t border-blue-400 dark:border-neutral-900 bg-gray-50 dark:bg-neutral-950/50 mt-auto">
             {user ? (
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 mb-2 px-2">
+                <Link
+                  to={`/profile/${user._id}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 mb-2 px-2 hover:bg-gray-100 dark:hover:bg-neutral-900 p-2 rounded-xl transition-colors cursor-pointer"
+                >
                   {user.profilePic ? (
                     <img
                       src={user.profilePic}
                       alt="Profile"
+                      loading="lazy"
                       className="w-10 h-10 rounded-full object-cover bg-gray-200 dark:bg-zinc-800 border border-blue-400"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-lg border border-blue-400">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-tr from-sky-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-inner shadow-black/20 border border-blue-400/50">
                       {user.firstName?.charAt(0).toUpperCase() || "U"}
                     </div>
                   )}
@@ -295,11 +299,11 @@ function Navbar() {
                     <div className="font-bold text-gray-900 dark:text-white capitalize">
                       {user.firstName} {user.lastName}
                     </div>
-                    <div className="text-xs text-blue-500 font-semibold truncate max-w-[200px]">
+                    <div className="text-xs text-blue-500 font-semibold truncate max-w-50]">
                       {user.email}
                     </div>
                   </div>
-                </div>
+                </Link>
                 <button
                   onClick={() => {
                     if (window.confirm("Really want to logout?")) {
@@ -307,35 +311,33 @@ function Navbar() {
                       setMobileMenuOpen(false);
                     }
                   }}
-
-                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors flex justify-center items-center gap-2"
                 >
-                <LogOut className="w-4 h-4" /> Logout
-              </button>
+                  <LogOut className="w-4 h-4" /> Logout
+                </button>
               </div>
-          ) : (
-          <div className="flex flex-col gap-3">
-            <Link
-              to="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center bg-gray-500 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center bg-[#0970e7] hover:bg-[#0479ff] text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
-            >
-              Sign Up
-            </Link>
-          </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center bg-gray-500 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center bg-[#0970e7] hover:bg-[#0479ff] text-black dark:text-white font-bold py-3 rounded-xl transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
+          </div>
         </div>
-        </div>
-  )
-}
-    </header >
+      )}
+    </header>
   );
 }
 

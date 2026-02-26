@@ -5,6 +5,8 @@ import { setUser, logout } from "./redux/userSlice";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+import { ProtectedRoute, PublicOnlyRoute } from "./components/RouteGuards";
+
 // Lazy load all page components
 const Overview = lazy(() => import("./pages/Overview"));
 const Home = lazy(() => import("./pages/Home"));
@@ -16,7 +18,6 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Verify = lazy(() => import("./pages/auth/Verify"));
 const VerifyEmail = lazy(() => import("./pages/auth/VerifyEmail"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-const ChangePassword = lazy(() => import("./pages/auth/ChangePassword"));
 
 // Info pages
 const About = lazy(() => import("./pages/info/About"));
@@ -63,12 +64,14 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/profile",
+    path: "/profile/:userId",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <Profile />
-        </Layout>
+        <ProtectedRoute>
+          <Layout>
+            <Profile />
+          </Layout>
+        </ProtectedRoute>
       </Suspense>
     ),
   },
@@ -76,7 +79,9 @@ const router = createBrowserRouter([
     path: "/signup",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Signup />
+        <PublicOnlyRoute>
+          <Signup />
+        </PublicOnlyRoute>
       </Suspense>
     ),
   },
@@ -84,7 +89,9 @@ const router = createBrowserRouter([
     path: "/login",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Login />
+        <PublicOnlyRoute>
+          <Login />
+        </PublicOnlyRoute>
       </Suspense>
     ),
   },
@@ -92,7 +99,9 @@ const router = createBrowserRouter([
     path: "/verify",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Verify />
+        <PublicOnlyRoute>
+          <Verify />
+        </PublicOnlyRoute>
       </Suspense>
     ),
   },
@@ -100,25 +109,20 @@ const router = createBrowserRouter([
     path: "/forgot-password",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ForgotPassword />
+        <PublicOnlyRoute>
+          <ForgotPassword />
+        </PublicOnlyRoute>
       </Suspense>
     ),
   },
-  {
-    path: "/change-password",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <ChangePassword />
-        </Layout>
-      </Suspense>
-    ),
-  },
+
   {
     path: "/verify/:token",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <VerifyEmail />
+        <PublicOnlyRoute>
+          <VerifyEmail />
+        </PublicOnlyRoute>
       </Suspense>
     ),
   },
