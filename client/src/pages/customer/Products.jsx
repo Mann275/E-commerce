@@ -6,6 +6,7 @@ import ProductCard from "../../components/ProductCard";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts, setLoading, setError } from "../../redux/productSlice";
+import PageLoader from "../../components/PageLoader";
 
 function Products() {
   const dispatch = useDispatch();
@@ -179,8 +180,8 @@ function Products() {
           {/* Product Grid */}
           <div className="flex-1 w-full relative min-h-[100vh]">
             {loading ? (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center min-h-[400px]">
+                <PageLoader />
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 py-20">

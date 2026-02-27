@@ -6,8 +6,9 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { setLoading, setSingleProduct, setError } from "../../redux/productSlice";
-import { addToCart } from "../../redux/cartSlice";
-import { addToWishlist, removeFromWishlist } from "../../redux/wishlistSlice";
+import { addToCart, syncAddToCart } from "../../redux/cartSlice";
+import { addToWishlist, removeFromWishlist, syncAddToWishlist, syncRemoveFromWishlist } from "../../redux/wishlistSlice";
+import PageLoader from "../../components/PageLoader";
 
 function ProductDetails() {
     const { id } = useParams();
@@ -72,11 +73,7 @@ function ProductDetails() {
     };
 
     if (loading || !product) {
-        return (
-            <div className="min-h-screen flex items-center justify-center dark:bg-black">
-                <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
+        return <PageLoader />;
     }
 
     const discountPercentage = product.discountPercentage || 0;
@@ -90,10 +87,16 @@ function ProductDetails() {
         if (!isAuthenticated) return toast.error("Please login to add to Wishlist");
 
         if (isInWishlist) {
-            dispatch(removeFromWishlist(product._id));
+            // Optimistic update
+            dispatch(removeFromWishlist(product));
+            // Async sync
+            dispatch(syncRemoveFromWishlist(product));
             toast.info("Removed from Wishlist");
         } else {
+            // Optimistic update
             dispatch(addToWishlist(product));
+            // Async sync
+            dispatch(syncAddToWishlist(product));
             toast.success("Added to Wishlist");
         }
     };
@@ -196,10 +199,17 @@ function ProductDetails() {
                                     </span>
                                 )}
                             </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                {true ? "In Stock & Ready to Ship" : "Out of Stock"}
+                            <div className="flex items-center gap-3">
+                                <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 ${product.quantity > 0
+                                    ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                                    : "bg-rose-500/10 text-rose-500 border border-rose-500/20"
+                                    }`}>
+                                    <div className={`w-2 h-2 rounded-full ${product.quantity > 0 ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}></div>
+                                    {product.quantity > 0 ? `In Stock (${product.quantity})` : "Out of Stock"}
+                                </div>
+                                <span className="text-gray-400 text-sm">SKU: OC-{product._id?.slice(-6).toUpperCase()}</span>
                             </div>
+
                         </div>
 
                         <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8 whitespace-pre-wrap">
@@ -226,23 +236,38 @@ function ProductDetails() {
 
                             <button
                                 onClick={() => {
-                                    dispatch(addToCart({ ...product, quantity, finalPrice }));
+                                    if (!product || product.quantity <= 0) {
+                                        return toast.warning(`${product?.productName || 'Product'} is out of stock`);
+                                    }
+                                    if (!isAuthenticated) {
+                                        return toast.error("Please login to add items to your cart");
+                                    }
+                                    const payload = { ...product, quantity, finalPrice };
+                                    // Optimistic update
+                                    dispatch(addToCart(payload));
+                                    // Async sync
+                                    dispatch(syncAddToCart(payload));
                                     toast.success(`${quantity}x ${product.productName} added to cart!`);
                                 }}
-                                disabled={!product.inStock}
-                                className={`flex-1 h-14 font-bold rounded-xl flex items-center justify-center gap-2 transition-colors relative overflow-hidden group ${product.inStock
-                                    ? "bg-sky-500 hover:bg-sky-600 text-white shadow-lg shadow-sky-500/25"
-                                    : "bg-gray-200 dark:bg-white/10 text-gray-400 cursor-not-allowed"
+                                disabled={product?.quantity <= 0}
+                                className={`flex-1 h-14 font-black rounded-xl flex items-center justify-center gap-2 transition-all relative overflow-hidden group ${product?.quantity > 0
+                                    ? "bg-sky-500 hover:bg-sky-600 text-white shadow-lg shadow-sky-500/25 active:scale-95"
+                                    : "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed border border-dashed border-gray-300 dark:border-white/10"
                                     }`}
                             >
-                                <span className="relative z-10 flex items-center gap-2">
-                                    <ShoppingCart size={20} /> {product.inStock ? "Add to Cart" : "Out of Stock"}
+                                <span className="relative z-10 flex items-center gap-2 tracking-widest uppercase text-sm">
+                                    <ShoppingCart size={20} /> {product?.quantity > 0 ? "Add to Cart" : "Item Unavailable"}
                                 </span>
-                                {product.inStock && <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 z-0"></div>}
+                                {product?.quantity > 0 && <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 z-0"></div>}
                             </button>
 
                             <button
-                                onClick={toggleWishlist}
+                                onClick={(e) => {
+                                    if (!isAuthenticated) {
+                                        return toast.error("Please login to add items to your wishlist");
+                                    }
+                                    toggleWishlist(e);
+                                }}
                                 className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors border ${isInWishlist
                                     ? "bg-rose-50 text-rose-500 border-rose-200 dark:bg-rose-500/10 dark:border-rose-500/20"
                                     : "bg-white dark:bg-black border-gray-200 dark:border-white/10 text-gray-400 hover:text-rose-500"

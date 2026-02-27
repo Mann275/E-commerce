@@ -32,7 +32,7 @@ const Profile = () => {
     lastName: user?.lastName || "",
     email: user?.email || "",
     phoneNo: user?.phoneNo || "",
-    address: user?.address || "",
+    address: user?.address || "", // Single address kept for sellers
     pincode: user?.pincode || "",
     city: user?.city || "",
     profilePic: user?.profilePic || "",
@@ -41,12 +41,24 @@ const Profile = () => {
     showPhone: user?.showPhone !== false,
   });
 
+  const [removePic, setRemovePic] = useState(false);
   const [file, setFile] = useState(null);
+
+  // Multiple Addresses State for normal users
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [addressData, setAddressData] = useState({
+    address: "",
+    city: "",
+    pincode: "",
+  });
+
   const [showCropper, setShowCropper] = useState(false);
   const [tempImageSrc, setTempImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const [showAddressModal, setShowAddressModal] = useState(false);
 
   // Password Modal State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -83,13 +95,17 @@ const Profile = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
 
       if (res.data.success) {
         toast.success(res.data.message);
         setShowPasswordModal(false);
-        setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+        setPasswordData({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
       }
     } catch (error) {
       console.error(error);
@@ -113,6 +129,43 @@ const Profile = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const res = await axios.get(`${API_URL}/api/v1/users/get-user/${userId}`);
+      if (res.data.success) {
+        const fetchedUser = res.data.user;
+        dispatch(setUser(fetchedUser));
+        localStorage.setItem("user", JSON.stringify(fetchedUser));
+
+        // Only update local state if we haven't made changes
+        if (!hasChanges) {
+          setUpdateUser({
+            firstName: fetchedUser.firstName || "",
+            lastName: fetchedUser.lastName || "",
+            email: fetchedUser.email || "",
+            phoneNo: fetchedUser.phoneNo || "",
+            address: fetchedUser.address || "",
+            pincode: fetchedUser.pincode || "",
+            city: fetchedUser.city || "",
+            profilePic: fetchedUser.profilePic || "",
+            role: fetchedUser.role || "",
+            showEmail: fetchedUser.showEmail !== false,
+            showPhone: fetchedUser.showPhone !== false,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserProfile();
+    }
+  }, [userId]);
+
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
@@ -125,6 +178,7 @@ const Profile = () => {
         ...prev,
         profilePic: URL.createObjectURL(croppedFile),
       }));
+      setRemovePic(false); // Reset remove picture if they crop a new one
       setShowCropper(false);
       setTempImageSrc(null);
     } catch (e) {
@@ -138,6 +192,77 @@ const Profile = () => {
     setTempImageSrc(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  const handleAddressDataChange = (e) => {
+    setAddressData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const openAddressModalForAdd = () => {
+    setEditingAddressId(null);
+    setAddressData({ address: "", city: "", pincode: "" });
+    setShowAddressModal(true);
+  };
+
+  const openAddressModalForEdit = (addr) => {
+    setEditingAddressId(addr._id);
+    setAddressData({
+      address: addr.address,
+      city: addr.city,
+      pincode: addr.pincode,
+    });
+    setShowAddressModal(true);
+  };
+
+  const submitAddressChange = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    const accessToken = localStorage.getItem("accesstoken");
+    try {
+      let res;
+      if (editingAddressId) {
+        // Edit existing address
+        res = await axios.put(
+          `${API_URL}/api/v1/users/address/${editingAddressId}`,
+          addressData,
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+      } else {
+        // Add new address
+        res = await axios.post(`${API_URL}/api/v1/users/address`, addressData, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+      }
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+        dispatch(setUser(res.data.user));
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        setShowAddressModal(false);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to save address");
+    }
+  };
+
+  const deleteAddress = async (addressId) => {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    const accessToken = localStorage.getItem("accesstoken");
+    try {
+      const res = await axios.delete(
+        `${API_URL}/api/v1/users/address/${addressId}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        dispatch(setUser(res.data.user));
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete address");
+    }
+  };
+
   const [hasChanges, setHasChanges] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -153,10 +278,10 @@ const Profile = () => {
       updateUser.showEmail !== (user.showEmail !== false) ||
       updateUser.showPhone !== (user.showPhone !== false) ||
       file !== null || // New picture uploaded
-      updateUser.profilePic === ""; // Picture removed
+      removePic === true; // Picture removed explicitly
 
     setHasChanges(isDifferent);
-  }, [updateUser, user, file]);
+  }, [updateUser, user, file, removePic]);
 
   const handleRemoveProfilePic = () => {
     setFile(null);
@@ -167,6 +292,7 @@ const Profile = () => {
       ...prev,
       profilePic: "",
     }));
+    setRemovePic(true);
     setImgError(false); // Reset error state when picture is removed
   };
 
@@ -187,7 +313,7 @@ const Profile = () => {
       formData.append("showPhone", updateUser.showPhone);
       if (file) {
         formData.append("file", file);
-      } else if (updateUser.profilePic === "") {
+      } else if (removePic) {
         formData.append("profilePic", "");
       }
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -206,6 +332,7 @@ const Profile = () => {
         toast.success(res.data.message || "Profile updated successfully");
         dispatch(setUser(res.data.user));
         localStorage.setItem("user", JSON.stringify(res.data.user));
+        setRemovePic(false);
         setImgError(false); // Reset error state on successful update
       }
     } catch (error) {
@@ -265,8 +392,19 @@ const Profile = () => {
                     className="absolute top-0 right-0 p-1.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-transform hover:scale-105"
                     title="Remove Profile Picture"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 )}
@@ -282,7 +420,9 @@ const Profile = () => {
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white capitalize">
                   {updateUser.firstName} {updateUser.lastName}
                 </h3>
-                <p className={`text-sm tracking-widest font-bold uppercase mt-1 ${updateUser.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_12px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_12px_rgba(14,165,233,0.8)]'}`}>
+                <p
+                  className={`text-sm tracking-widest font-bold uppercase mt-1 ${updateUser.role === "seller" ? "text-emerald-500 [text-shadow:0_0_12px_rgba(16,185,129,0.8)]" : "text-sky-500 [text-shadow:0_0_12px_rgba(14,165,233,0.8)]"}`}
+                >
                   {updateUser.role}
                 </p>
               </div>
@@ -297,7 +437,7 @@ const Profile = () => {
               </h3>
 
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       First Name
@@ -334,10 +474,23 @@ const Profile = () => {
                     {user?.role === "seller" && (
                       <button
                         type="button"
-                        onClick={() => setUpdateUser(prev => ({ ...prev, showEmail: !prev.showEmail }))}
+                        onClick={() =>
+                          setUpdateUser((prev) => ({
+                            ...prev,
+                            showEmail: !prev.showEmail,
+                          }))
+                        }
                         className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                       >
-                        {updateUser.showEmail ? <><Eye size={14} /> Public</> : <><EyeOff size={14} /> Hidden</>}
+                        {updateUser.showEmail ? (
+                          <>
+                            <Eye size={14} /> Public
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff size={14} /> Hidden
+                          </>
+                        )}
                       </button>
                     )}
                   </div>
@@ -354,6 +507,47 @@ const Profile = () => {
                   <p className="text-xs text-gray-500 mt-1">
                     Email cannot be changed directly.
                   </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Phone Number
+                    </label>
+                    {user?.role === "seller" && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setUpdateUser((prev) => ({
+                            ...prev,
+                            showPhone: !prev.showPhone,
+                          }))
+                        }
+                        className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                      >
+                        {updateUser.showPhone ? (
+                          <>
+                            <Eye size={14} /> Public
+                          </>
+                        ) : (
+                          <>
+                            <EyeOff size={14} /> Hidden
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="tel"
+                      name="phoneNo"
+                      value={updateUser.phoneNo}
+                      onChange={handleChange}
+                      placeholder="+91 0000000000"
+                      className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                    />
+                  </div>
                 </div>
 
                 <div className="pt-4 mt-4 border-t border-blue-400 dark:border-neutral-800">
@@ -373,86 +567,125 @@ const Profile = () => {
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white dark:bg-[#111] rounded-3xl p-6 shadow-xs border border-blue-400 dark:border-neutral-800 flex flex-col h-full">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-red-500" /> Contact Details
+                <MapPin className="w-5 h-5 text-red-500" /> Address Details
               </h3>
 
               <div className="space-y-4 flex-1">
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Phone Number
-                    </label>
-                    {user?.role === "seller" && (
-                      <button
-                        type="button"
-                        onClick={() => setUpdateUser(prev => ({ ...prev, showPhone: !prev.showPhone }))}
-                        className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                      >
-                        {updateUser.showPhone ? <><Eye size={14} /> Public</> : <><EyeOff size={14} /> Hidden</>}
-                      </button>
+                {user?.role === "seller" ? (
+                  <>
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Street Address
+                      </label>
+                      <textarea
+                        name="address"
+                        value={updateUser.address}
+                        onChange={handleChange}
+                        rows="2"
+                        placeholder="Enter your full address"
+                        className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all resize-none"
+                      ></textarea>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          City
+                        </label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            name="city"
+                            value={updateUser.city}
+                            onChange={handleChange}
+                            placeholder="City"
+                            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Pincode
+                        </label>
+                        <div className="relative">
+                          <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            name="pincode"
+                            value={updateUser.pincode}
+                            onChange={handleChange}
+                            placeholder="Pincode"
+                            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col h-full space-y-4">
+                    {user?.addresses && user.addresses.length > 0 ? (
+                      <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+                        {user.addresses.map((addr) => (
+                          <div
+                            key={addr._id}
+                            className="bg-gray-50 dark:bg-neutral-900 px-3 py-2.5 rounded-xl border border-blue-200 dark:border-neutral-800 relative flex items-center gap-3 group"
+                          >
+                            <div className="w-1 self-stretch rounded-full bg-blue-500 shrink-0"></div>
+
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-gray-900 dark:text-white font-medium truncate">
+                                {addr.address}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+                                <Building className="w-3 h-3 shrink-0" />
+                                {[addr.city, addr.pincode]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </p>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => openAddressModalForEdit(addr)}
+                                className="text-[11px] bg-gray-200 hover:bg-gray-300 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300 px-2.5 py-1 rounded-lg transition-colors font-medium"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteAddress(addr._id)}
+                                className="text-[11px] bg-rose-100/50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-400 px-2.5 py-1 rounded-lg transition-colors font-medium"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50/50 dark:bg-neutral-900/50 p-5 rounded-2xl border border-dashed border-blue-300 dark:border-neutral-700 text-center text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center flex-1">
+                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+                          <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <p className="font-medium text-sm text-gray-700 dark:text-gray-300 mb-0.5">
+                          No addresses saved
+                        </p>
+                        <p className="text-xs">
+                          Add an address to complete your profile.
+                        </p>
+                      </div>
                     )}
+                    <button
+                      type="button"
+                      onClick={openAddressModalForAdd}
+                      className="w-full mt-auto py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 shrink-0"
+                    >
+                      <MapPin className="w-3.5 h-3.5" /> Add New Address
+                    </button>
                   </div>
-                  <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="tel"
-                      name="phoneNo"
-                      value={updateUser.phoneNo}
-                      onChange={handleChange}
-                      placeholder="+91 0000000000"
-                      className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Street Address
-                  </label>
-                  <textarea
-                    name="address"
-                    value={updateUser.address}
-                    onChange={handleChange}
-                    rows="2"
-                    placeholder="Enter your full address"
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all resize-none"
-                  ></textarea>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      City
-                    </label>
-                    <div className="relative">
-                      <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        name="city"
-                        value={updateUser.city}
-                        onChange={handleChange}
-                        placeholder="City"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Pincode
-                    </label>
-                    <div className="relative">
-                      <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        name="pincode"
-                        value={updateUser.pincode}
-                        onChange={handleChange}
-                        placeholder="Pincode"
-                        className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
-                      />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -482,7 +715,9 @@ const Profile = () => {
       {showCropper && tempImageSrc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-blue-400/30 dark:border-neutral-800">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Edit Profile Picture</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+              Edit Profile Picture
+            </h3>
 
             <div className="relative w-full h-64 bg-black rounded-xl overflow-hidden mb-6 touch-none block">
               <Cropper
@@ -535,17 +770,105 @@ const Profile = () => {
         </div>
       )}
 
+      {/* Address Modal */}
+      {showAddressModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-3xl rounded-3xl p-8 w-full max-w-md shadow-2xl border border-blue-400/30 dark:border-neutral-800 animate-in fade-in zoom-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              {editingAddressId ? "Update Address" : "Add Address"}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Enter your address details.
+            </p>
+
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Street Address
+                </label>
+                <textarea
+                  name="address"
+                  value={addressData.address}
+                  onChange={handleAddressDataChange}
+                  rows="2"
+                  placeholder="Enter your full address"
+                  className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all resize-none"
+                ></textarea>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    City
+                  </label>
+                  <div className="relative">
+                    <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      name="city"
+                      value={addressData.city}
+                      onChange={handleAddressDataChange}
+                      placeholder="City"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Pincode
+                  </label>
+                  <div className="relative">
+                    <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={addressData.pincode}
+                      onChange={handleAddressDataChange}
+                      placeholder="Pincode"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-neutral-900 border border-blue-400 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500/50 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddressModal(false)}
+                  className="flex-1 py-3 px-4 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={submitAddressChange}
+                  className="flex-1 py-3 px-4 flex items-center justify-center rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 cursor-pointer"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Change Password Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-white/90 dark:bg-[#111111]/90 backdrop-blur-3xl rounded-3xl p-8 w-full max-w-md shadow-2xl border border-blue-400/30 dark:border-neutral-800 animate-in fade-in zoom-in duration-300">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Change Password</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Update your account security parameters.</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              Change Password
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Update your account security parameters.
+            </p>
 
             <form onSubmit={submitPasswordChange} className="space-y-4">
               {/* Old Password */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Password</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Current Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -562,14 +885,20 @@ const Profile = () => {
                     onClick={() => setShowOldPass(!showOldPass)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
                   >
-                    {showOldPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showOldPass ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
 
               {/* New Password */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  New Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -586,14 +915,20 @@ const Profile = () => {
                     onClick={() => setShowNewPass(!showNewPass)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
                   >
-                    {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showNewPass ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
 
               {/* Confirm Password */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Confirm Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
@@ -610,7 +945,11 @@ const Profile = () => {
                     onClick={() => setShowConfirmPass(!showConfirmPass)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
                   >
-                    {showConfirmPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showConfirmPass ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -620,7 +959,11 @@ const Profile = () => {
                   type="button"
                   onClick={() => {
                     setShowPasswordModal(false);
-                    setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+                    setPasswordData({
+                      oldPassword: "",
+                      newPassword: "",
+                      confirmPassword: "",
+                    });
                   }}
                   className="flex-1 py-3 px-4 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                 >
@@ -631,7 +974,11 @@ const Profile = () => {
                   disabled={passwordLoading}
                   className="flex-1 py-3 px-4 flex items-center justify-center rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                 >
-                  {passwordLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Update"}
+                  {passwordLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    "Update"
+                  )}
                 </button>
               </div>
             </form>

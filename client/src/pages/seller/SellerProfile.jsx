@@ -5,6 +5,7 @@ import { PackageOpen, Mail, Phone, MapPin, Calendar, ExternalLink, ShieldCheck }
 import axios from "axios";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "sonner";
+import PageLoader from "../../components/PageLoader";
 
 function SellerProfile() {
     const { id } = useParams();
@@ -53,11 +54,7 @@ function SellerProfile() {
     }, [id]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen bg-slate-50 dark:bg-black pt-24 pb-20 flex items-center justify-center">
-                <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
+        return <PageLoader />;
     }
 
     if (!seller && products.length === 0) {

@@ -349,7 +349,7 @@ function Navbar() {
                     <div className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]'}`}>
                       {user.role}
                     </div>
-                    <div className="text-xs text-blue-500 font-semibold truncate max-w-[200px] mt-1">
+                    <div className="text-xs text-blue-500 font-semibold truncate max-w-50 mt-1">
                       {user.email}
                     </div>
                   </div>

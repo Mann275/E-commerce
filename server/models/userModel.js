@@ -53,6 +53,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    addresses: [
+      {
+        address: { type: String, required: true },
+        city: { type: String, required: true },
+        pincode: { type: String, required: true },
+      },
+    ],
+    // Existing fields for backward compatibility (especially seller flow)
     address: {
       type: String,
     },

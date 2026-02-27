@@ -99,17 +99,13 @@ export const verify = async (req, res) => {
 
     // Generate access and refresh tokens for auto-login
     const accesstoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
     const refreshtoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
+      expiresIn: "365d",
     });
 
     // Create session for the user
-    const existingSession = await Session.findOne({ userId: user._id });
-    if (existingSession) {
-      await Session.deleteOne({ userId: user._id });
-    }
     await Session.create({ userId: user._id });
 
     return res.status(200).json({
@@ -178,19 +174,13 @@ export const login = async (req, res) => {
 
     // Generate a new token for the user
     const accesstoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
     const refreshtoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
+      expiresIn: "365d",
     });
     user.isloggedin = true;
     await user.save();
-
-    // Checking for existing session and deleting it if exists to prevent multiple sessions for the same user
-    const existingSession = await Session.findOne({ userId: user._id });
-    if (existingSession) {
-      await Session.deleteOne({ userId: user._id });
-    }
 
     // Creating a new session for the user
     await Session.create({ userId: user._id });
@@ -523,6 +513,71 @@ export const updateUser = async (req, res) => {
       message: "Profile updated successfully",
       user: updatedUser,
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const addUserAddress = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { address, city, pincode } = req.body;
+
+    if (!address || !city || !pincode) {
+      return res.status(400).json({ success: false, message: "All address fields are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.addresses.push({ address, city, pincode });
+    await user.save();
+
+    return res.status(200).json({ success: true, message: "Address added successfully", user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const editUserAddress = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { addressId } = req.params;
+    const { address, city, pincode } = req.body;
+
+    if (!address || !city || !pincode) {
+      return res.status(400).json({ success: false, message: "All address fields are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const addrIndex = user.addresses.findIndex(addr => addr._id.toString() === addressId);
+    if (addrIndex === -1) {
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+
+    user.addresses[addrIndex] = { ...user.addresses[addrIndex], address, city, pincode };
+    await user.save();
+
+    return res.status(200).json({ success: true, message: "Address updated successfully", user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const removeUserAddress = async (req, res) => {
+  try {
+    const userId = req.id;
+    const { addressId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.addresses = user.addresses.filter(addr => addr._id.toString() !== addressId);
+    await user.save();
+
+    return res.status(200).json({ success: true, message: "Address removed successfully", user });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

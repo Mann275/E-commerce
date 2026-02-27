@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, ArrowRight, ArrowLeft, ShieldCheck, CreditCard, Lock } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateQuantity as updateCartQuantity, removeFromCart } from "../../redux/cartSlice";
+import { updateQuantity as updateCartQuantity, removeFromCart, syncRemoveFromCart, syncUpdateQuantity } from "../../redux/cartSlice";
 
 function Cart() {
     const dispatch = useDispatch();
@@ -11,11 +11,14 @@ function Cart() {
 
     const handleUpdateQuantity = (id, newQuantity) => {
         if (newQuantity < 1) return;
+        const currentItem = cartItems.find(item => item._id === id);
         dispatch(updateCartQuantity({ id, quantity: newQuantity }));
+        dispatch(syncUpdateQuantity({ id, quantity: newQuantity, originalQuantity: currentItem?.quantity }));
     };
 
-    const handleRemoveItem = (id) => {
-        dispatch(removeFromCart(id));
+    const handleRemoveItem = (item) => {
+        dispatch(removeFromCart(item));
+        dispatch(syncRemoveFromCart(item));
     };
 
     // Use finalPrice if available, else fallback to standard price
@@ -97,7 +100,7 @@ function Cart() {
                                                 </div>
 
                                                 <button
-                                                    onClick={() => handleRemoveItem(item._id)}
+                                                    onClick={() => handleRemoveItem(item)}
                                                     className="text-gray-400 hover:text-rose-500 transition-colors flex items-center gap-1 text-sm font-medium"
                                                 >
                                                     <Trash2 size={16} /> Remove

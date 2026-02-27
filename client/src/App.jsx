@@ -1,8 +1,10 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { fetchCart } from "./redux/cartSlice";
+import { fetchWishlist } from "./redux/wishlistSlice";
 
 import { ProtectedRoute, PublicOnlyRoute } from "./components/RouteGuards";
 import SellerDashboard from "./pages/seller/SellerDashboard";
@@ -31,16 +33,7 @@ const Offers = lazy(() => import("./pages/info/Offers"));
 const Privacy = lazy(() => import("./pages/info/Privacy"));
 const Terms = lazy(() => import("./pages/info/Terms"));
 
-// Loading component
-const PageLoader = () => (
-  <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center transition-colors duration-300 relative">
-    <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-sky-200/40 via-white to-white dark:from-sky-900/20 dark:via-black dark:to-black"></div>
-    <div className="text-center relative z-10">
-      <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-gray-600 dark:text-gray-400 text-lg">Loading...</p>
-    </div>
-  </div>
-);
+import PageLoader from "./components/PageLoader";
 
 // Conditional component - shows Home if logged in, Overview if not
 const HomeOrOverview = () => {
@@ -84,11 +77,9 @@ const router = createBrowserRouter([
     path: "/products",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ProtectedRoute allowedRoles={["customer"]}>
-          <Layout>
-            <Products />
-          </Layout>
-        </ProtectedRoute>
+        <Layout>
+          <Products />
+        </Layout>
       </Suspense>
     ),
   },
@@ -96,11 +87,9 @@ const router = createBrowserRouter([
     path: "/product/:id",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ProtectedRoute allowedRoles={["customer"]}>
-          <Layout>
-            <ProductDetails />
-          </Layout>
-        </ProtectedRoute>
+        <Layout>
+          <ProductDetails />
+        </Layout>
       </Suspense>
     ),
   },
@@ -255,7 +244,29 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  // Authentication state is now initialized synchronously in Redux userSlice
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    // Forced delay to show animation (3.5 seconds)
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchCart());
+      dispatch(fetchWishlist());
+    }
+  }, [dispatch, isAuthenticated]);
+
+  if (isInitializing) {
+    return <PageLoader />;
+  }
 
   return (
     <>

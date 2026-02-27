@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Loader } from "lucide-react";
 import { toast } from "sonner";
+import PageLoader from "../../components/PageLoader";
 
 function VerifyEmail() {
   const { token } = useParams();
@@ -85,15 +86,12 @@ function VerifyEmail() {
 
       {/* Verification Status */}
       <div
-        className="bg-black/60 backdrop-blur-xl p-8 rounded-2xl border border-white/30 w-full max-w-md shadow-2xl z-40 text-center mx-4"
+        className="bg-black/60 backdrop-blur-xl p-8 rounded-2xl border border-white/30 w-full max-w-md shadow-2xl z-40 text-center mx-4 flex flex-col items-center justify-center min-h-[300px]"
         style={{ pointerEvents: "auto" }}
       >
         {isVerifying ? (
-          <div className="flex flex-col items-center">
-            <Loader className="h-12 w-12 animate-spin text-white mb-4" />
-            <h2 className="text-xl font-semibold text-white drop-shadow-lg">
-              {status}
-            </h2>
+          <div className="flex flex-col items-center scale-75">
+            <PageLoader />
           </div>
         ) : (
           <div>

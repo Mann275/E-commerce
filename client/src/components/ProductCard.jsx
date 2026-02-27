@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShoppingCart, Heart, Star, Zap } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../redux/cartSlice";
-import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice";
+import { addToCart, syncAddToCart } from "../redux/cartSlice";
+import { addToWishlist, removeFromWishlist, syncAddToWishlist, syncRemoveFromWishlist } from "../redux/wishlistSlice";
 import { toast } from "sonner";
 
 function ProductCard({ product }) {
@@ -23,15 +23,22 @@ function ProductCard({ product }) {
     if (!isAuthenticated) return toast.error("Please login to add to Wishlist");
 
     if (isInWishlist) {
-      dispatch(removeFromWishlist(product._id));
+      // Optimistic update
+      dispatch(removeFromWishlist(product));
+      // Async sync
+      dispatch(syncRemoveFromWishlist(product));
       toast.info("Removed from Wishlist");
     } else {
+      // Optimistic update
       dispatch(addToWishlist(product));
+      // Async sync
+      dispatch(syncAddToWishlist(product));
       toast.success("Added to Wishlist");
     }
   };
 
-  const { _id, productName, category, productPrice, discountPercentage, reviews, productImg, inStock = true, isNew = false } = product;
+  const { _id, productName, category, productPrice, discountPercentage, reviews, productImg, quantity = 0, isNew = false } = product;
+  const isOutOfStock = quantity <= 0;
 
   // Calculations
   const finalPrice = discountPercentage > 0
@@ -75,25 +82,27 @@ function ProductCard({ product }) {
       </button>
 
       {/* Image Container */}
-      <Link to={`/product/${_id}`} className="relative block h-56 overflow-hidden bg-gray-100 dark:bg-black p-4">
-        {displayImage ? (
-          <img
-            src={displayImage}
-            alt={productName}
-            className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-110 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
-        )}
-        {/* Overlay on hover for Quick View effect (optional) */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 dark:group-hover:bg-black/40 transition-colors duration-300" />
+      <Link to={`/product/${_id}`} className="relative block h-52 overflow-hidden bg-white dark:bg-zinc-900 group">
+        <div className="w-full h-full flex items-center justify-center">
+          {displayImage ? (
+            <img
+              src={displayImage}
+              alt={productName}
+              className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal transform group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400 font-medium">No Image</div>
+          )}
+        </div>
+        {/* Subtle overlay on hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
       </Link>
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
-        <div className="text-xs font-medium text-sky-500 mb-1">{category}</div>
+        <div className="text-xs font-semibold text-sky-500 mb-1 tracking-wider uppercase">{category}</div>
         <Link to={`/product/${_id}`} className="block mb-2 min-h-[48px]">
-          <h3 className="font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-sky-500 transition-colors">
+          <h3 className="font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-sky-500 transition-colors leading-tight">
             {productName}
           </h3>
         </Link>
@@ -104,43 +113,45 @@ function ProductCard({ product }) {
               <Star
                 key={i}
                 size={14}
-                className={i < Math.floor(averageRating) ? "fill-amber-400 text-amber-400" : "text-gray-300 dark:text-gray-600"}
+                className={i < Math.floor(averageRating) ? "fill-amber-400 text-amber-400" : "text-gray-300 dark:text-gray-700"}
               />
             ))}
           </div>
           <span className="text-xs text-gray-500 dark:text-gray-400">({reviews?.length || 0})</span>
         </div>
 
-        <div className="mt-auto flex items-end justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                ₹{finalPrice.toLocaleString()}
-              </span>
-            </div>
+        <div className="mt-auto flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-xl font-black text-gray-900 dark:text-white">
+              ₹{finalPrice.toLocaleString()}
+            </span>
             {discountPercentage > 0 && (
-              <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
+              <span className="text-xs text-gray-500 dark:text-gray-400 line-through">
                 ₹{productPrice.toLocaleString()}
               </span>
             )}
           </div>
 
-          <button
-            onClick={(e) => {
-              e.preventDefault(); // prevent navigation trigger
-              if (!isAuthenticated) return toast.error("Please login to add to cart");
-              dispatch(addToCart({ ...product, quantity: 1, finalPrice }));
-              toast.success(`${productName} added to cart!`);
-            }}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${inStock
-              ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white hover:bg-sky-500 hover:text-white dark:hover:bg-sky-500"
-              : "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed"
-              }`}
-            disabled={!inStock}
-            title={inStock ? "Add to Cart" : "Out of Stock"}
-          >
-            <ShoppingCart size={18} className={inStock ? "" : "opacity-50"} />
-          </button>
+          {isOutOfStock ? (
+            <div className="px-3 py-1.5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-widest rounded-lg border border-rose-200 dark:border-rose-500/20">
+              Out of Stock
+            </div>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                if (!isAuthenticated) return toast.error("Please login to add to cart");
+                const payload = { ...product, quantity: 1, finalPrice };
+                dispatch(addToCart(payload));
+                dispatch(syncAddToCart(payload));
+                toast.success(`${productName} added to cart!`);
+              }}
+              className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center hover:bg-sky-600 transition-all duration-300 shadow-lg shadow-sky-500/25 active:scale-95"
+              title="Add to Cart"
+            >
+              <ShoppingCart size={18} />
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
