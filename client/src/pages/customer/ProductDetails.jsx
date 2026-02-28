@@ -227,7 +227,13 @@ function ProductDetails() {
                                 </button>
                                 <span className="font-bold text-gray-900 dark:text-white">{quantity}</span>
                                 <button
-                                    onClick={() => setQuantity(quantity + 1)}
+                                    onClick={() => {
+                                        if (quantity >= product.quantity) {
+                                            toast.warning(`Only ${product.quantity} units available in stock.`);
+                                        } else {
+                                            setQuantity(quantity + 1);
+                                        }
+                                    }}
                                     className="text-gray-500 hover:text-sky-500 text-xl font-bold px-2 transition-colors"
                                 >
                                     +

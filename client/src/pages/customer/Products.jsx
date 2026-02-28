@@ -46,7 +46,7 @@ function Products() {
 
   // Apply Client-Side Filtering & Sorting
   useEffect(() => {
-    let result = [...products];
+    let result = products.filter(p => !p.status || p.status === "active");
 
     // Search filter
     if (searchQuery) {
@@ -57,7 +57,13 @@ function Products() {
 
     // Category filter
     if (selectedCategories.length > 0) {
-      result = result.filter(p => selectedCategories.includes(p.category));
+      result = result.filter(p => {
+        // Synonym Logic for CPU / Processor
+        if (selectedCategories.includes("CPU / Processor")) {
+          return selectedCategories.includes(p.category) || p.category === "CPU" || p.category === "Processor" || p.category === "CPU / Processor";
+        }
+        return selectedCategories.includes(p.category);
+      });
     }
 
     // Price filter
@@ -83,6 +89,15 @@ function Products() {
       });
     } else if (sortBy === "newest") {
       result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (sortBy === "rating") {
+      result.sort((a, b) => {
+        const ratingA = a.reviews?.length > 0 ? a.reviews.reduce((s, r) => s + r.rating, 0) / a.reviews.length : 0;
+        const ratingB = b.reviews?.length > 0 ? b.reviews.reduce((s, r) => s + r.rating, 0) / b.reviews.length : 0;
+        return ratingB - ratingA;
+      });
+    } else if (sortBy === "featured") {
+      // For demo, featured means high discount or recently updated
+      result.sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0));
     }
 
     setFilteredProducts(result);

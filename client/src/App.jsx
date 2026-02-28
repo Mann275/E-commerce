@@ -6,8 +6,12 @@ import Footer from "./components/Footer";
 import { fetchCart } from "./redux/cartSlice";
 import { fetchWishlist } from "./redux/wishlistSlice";
 
-import { ProtectedRoute, PublicOnlyRoute } from "./components/RouteGuards";
+import { ProtectedRoute, PublicOnlyRoute, CustomerOnlyRoute, BannedOnlyRoute } from "./components/RouteGuards";
+import SellerSidebar from "./components/seller/SellerSidebar";
+import AdminSidebar from "./components/admin/AdminSidebar";
 import SellerDashboard from "./pages/seller/SellerDashboard";
+import { useLocation, Outlet } from "react-router-dom";
+import { AuthInterceptor } from "./components/AuthInterceptor";
 
 // Lazy load all page components
 const Overview = lazy(() => import("./pages/Overview"));
@@ -17,7 +21,20 @@ const Products = lazy(() => import("./pages/customer/Products"));
 const ProductDetails = lazy(() => import("./pages/customer/ProductDetails"));
 const Cart = lazy(() => import("./pages/customer/Cart"));
 const Wishlist = lazy(() => import("./pages/customer/Wishlist"));
+const Checkout = lazy(() => import("./pages/customer/Checkout"));
+const MyOrders = lazy(() => import("./pages/customer/MyOrders"));
 const SellerProfile = lazy(() => import("./pages/seller/SellerProfile"));
+const SellerAnalytics = lazy(() => import("./pages/seller/SellerAnalytics"));
+const SellerInventory = lazy(() => import("./pages/seller/SellerInventory"));
+const SellerOrders = lazy(() => import("./pages/seller/SellerOrders"));
+const AddProduct = lazy(() => import("./pages/seller/AddProduct"));
+const EditProduct = lazy(() => import("./pages/seller/EditProduct"));
+
+// Admin Pages
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
 
 // Auth pages
 const Signup = lazy(() => import("./pages/auth/Signup"));
@@ -25,11 +42,11 @@ const Login = lazy(() => import("./pages/auth/Login"));
 const Verify = lazy(() => import("./pages/auth/Verify"));
 const VerifyEmail = lazy(() => import("./pages/auth/VerifyEmail"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const BannedPage = lazy(() => import("./pages/auth/BannedPage"));
 
 // Info pages
 const About = lazy(() => import("./pages/info/About"));
 const Contact = lazy(() => import("./pages/info/Contact"));
-const Offers = lazy(() => import("./pages/info/Offers"));
 const Privacy = lazy(() => import("./pages/info/Privacy"));
 const Terms = lazy(() => import("./pages/info/Terms"));
 
@@ -42,22 +59,38 @@ const HomeOrOverview = () => {
 };
 
 // Layout wrapper with Navbar and Footer
-const Layout = ({ children }) => (
-  <>
-    <Navbar />
-    {children}
-    <Footer />
-  </>
-);
+const Layout = ({ children }) => {
+  const { user } = useSelector((state) => state.user);
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith("/dashboard");
+  const isAdminDashboard = location.pathname.startsWith("/admin-dashboard");
+  const isAnyDashboard = isDashboard || isAdminDashboard;
+
+  return (
+    <>
+      <Navbar />
+      {user?.role === "seller" && isDashboard && <SellerSidebar />}
+      {user?.role === "admin" && isAdminDashboard && <AdminSidebar />}
+      <div className={isAnyDashboard ? "pb-24 md:pb-0 md:pl-20 lg:pl-24 pt-20 md:pt-24 min-h-screen bg-white dark:bg-zinc-950 transition-colors" : "min-h-screen"}>
+        <div className={isAnyDashboard ? "max-w-7xl mx-auto px-4 md:px-8 pb-10" : ""}>
+          {children}
+        </div>
+      </div>
+      {!isAnyDashboard && <Footer />}
+    </>
+  );
+};
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <HomeOrOverview />
-        </Layout>
+        <AuthInterceptor>
+          <Layout>
+            <HomeOrOverview />
+          </Layout>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -65,11 +98,13 @@ const router = createBrowserRouter([
     path: "/profile/:userId",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ProtectedRoute>
-          <Layout>
-            <Profile />
-          </Layout>
-        </ProtectedRoute>
+        <AuthInterceptor>
+          <ProtectedRoute>
+            <Layout>
+              <Profile />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -77,9 +112,13 @@ const router = createBrowserRouter([
     path: "/products",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <Products />
-        </Layout>
+        <AuthInterceptor>
+          <CustomerOnlyRoute>
+            <Layout>
+              <Products />
+            </Layout>
+          </CustomerOnlyRoute>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -87,9 +126,13 @@ const router = createBrowserRouter([
     path: "/product/:id",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <ProductDetails />
-        </Layout>
+        <AuthInterceptor>
+          <CustomerOnlyRoute>
+            <Layout>
+              <ProductDetails />
+            </Layout>
+          </CustomerOnlyRoute>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -97,9 +140,11 @@ const router = createBrowserRouter([
     path: "/sellerinfo/:id",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <SellerProfile />
-        </Layout>
+        <AuthInterceptor>
+          <Layout>
+            <SellerProfile />
+          </Layout>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -107,23 +152,85 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ProtectedRoute allowedRoles={["seller"]}>
-          <Layout>
-            <SellerDashboard />
-          </Layout>
-        </ProtectedRoute>
+        <AuthInterceptor>
+          <ProtectedRoute allowedRoles={["seller"]}>
+            <Layout>
+              <Outlet />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
       </Suspense>
     ),
+    children: [
+      {
+        index: true,
+        element: <SellerAnalytics />
+      },
+      {
+        path: "inventory",
+        element: <SellerInventory />
+      },
+      {
+        path: "orders",
+        element: <SellerOrders />
+      },
+      {
+        path: "settings",
+        element: <SellerProfile />
+      },
+      {
+        path: "add-product",
+        element: <AddProduct />
+      },
+      {
+        path: "edit-product/:productId",
+        element: <EditProduct />
+      }
+    ]
+  },
+  {
+    path: "/admin-dashboard",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AuthInterceptor>
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Layout>
+              <Outlet />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
+      </Suspense>
+    ),
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />
+      },
+      {
+        path: "users",
+        element: <AdminUsers />
+      },
+      {
+        path: "products",
+        element: <AdminProducts />
+      },
+      {
+        path: "orders",
+        element: <AdminOrders />
+      }
+    ]
   },
   {
     path: "/wishlist",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ProtectedRoute allowedRoles={["customer"]}>
-          <Layout>
-            <Wishlist />
-          </Layout>
-        </ProtectedRoute>
+        <AuthInterceptor>
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <Layout>
+              <Wishlist />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -132,11 +239,41 @@ const router = createBrowserRouter([
     path: "/cart",
     element: (
       <Suspense fallback={<PageLoader />}>
-        <ProtectedRoute allowedRoles={["customer"]}>
-          <Layout>
-            <Cart />
-          </Layout>
-        </ProtectedRoute>
+        <AuthInterceptor>
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <Layout>
+              <Cart />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/checkout",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AuthInterceptor>
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <Layout>
+              <Checkout />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/my-orders",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AuthInterceptor>
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <Layout>
+              <MyOrders />
+            </Layout>
+          </ProtectedRoute>
+        </AuthInterceptor>
       </Suspense>
     ),
   },
@@ -192,6 +329,16 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/banned",
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <BannedOnlyRoute>
+          <BannedPage />
+        </BannedOnlyRoute>
+      </Suspense>
+    ),
+  },
+  {
     path: "/about",
     element: (
       <Suspense fallback={<PageLoader />}>
@@ -207,16 +354,6 @@ const router = createBrowserRouter([
       <Suspense fallback={<PageLoader />}>
         <Layout>
           <Contact />
-        </Layout>
-      </Suspense>
-    ),
-  },
-  {
-    path: "/offers",
-    element: (
-      <Suspense fallback={<PageLoader />}>
-        <Layout>
-          <Offers />
         </Layout>
       </Suspense>
     ),
@@ -249,10 +386,10 @@ function App() {
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    // Forced delay to show animation (3.5 seconds)
+    // Forced delay to show animation (1 second)
     const timer = setTimeout(() => {
       setIsInitializing(false);
-    }, 3500);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);

@@ -50,6 +50,11 @@ const productSchema = new mongoose.Schema(
         public_id: { type: String, required: true },
       },
     ],
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

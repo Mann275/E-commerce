@@ -32,7 +32,7 @@ const categories = [
     desc: "Cooling with RGB Lighting",
     gradient: "from-red-500 via-green-500 to-blue-500",
     image:
-      "https://res.cloudinary.com/mann2729/image/upload/v1772097455/photo-1587202372634-32705e3bf49c_qlp8cy.jpg",
+      "https://res.cloudinary.com/mann2729/image/upload/v1772097350/photo-1587202372634-32705e3bf49c_xowmty.jpg",
   },
   {
     name: "Motherboards",

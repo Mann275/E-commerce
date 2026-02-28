@@ -80,6 +80,11 @@ const userSchema = new mongoose.Schema(
     showEmail: {
       type: Boolean,
       default: true,
+    },
+    status: {
+      type: String,
+      default: "active",
+      enum: ["active", "banned"]
     }
   },
   { timestamps: true },

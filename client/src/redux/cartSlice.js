@@ -115,9 +115,9 @@ const cartSlice = createSlice({
         addToCart: (state, action) => {
             const itemIndex = state.cartItems.findIndex((item) => item._id === action.payload._id);
             if (itemIndex >= 0) {
-                state.cartItems[itemIndex].quantity += action.payload.quantity || 1;
+                state.cartItems[itemIndex].quantity += action.payload.requestedQuantity || 1;
             } else {
-                const tempProduct = { ...action.payload, quantity: action.payload.quantity || 1 };
+                const tempProduct = { ...action.payload, quantity: action.payload.requestedQuantity || 1, stock: action.payload.quantity };
                 state.cartItems.push(tempProduct);
             }
         },
@@ -173,10 +173,14 @@ const cartSlice = createSlice({
             state.isLoading = false;
             if (action.payload?.cart?.items) {
                 // Normalize backend structure to frontend structure
-                state.cartItems = action.payload.cart.items.map(item => ({
-                    ...item.productId, // Contains full product object since it was populated
-                    quantity: item.quantity
-                })).filter(item => item && item._id); // Filter out any null products if deleted from db
+                state.cartItems = action.payload.cart.items
+                    .filter(item => item.productId) // Ensure product exists
+                    .map(item => ({
+                        ...(item.productId || {}), // Contains full product object
+                        sellerId: item.productId?.userId, // Map userId to sellerId for order processing
+                        quantity: item.quantity, // Cart amount
+                        stock: item.productId?.quantity || 0 // Original DB inventory
+                    })).filter(item => item && item._id);
             }
         });
         builder.addCase(fetchCart.rejected, (state) => {

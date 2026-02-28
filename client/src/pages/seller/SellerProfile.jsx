@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { PackageOpen, Mail, Phone, MapPin, Calendar, ExternalLink, ShieldCheck } from "lucide-react";
+import { PackageOpen, Mail, Phone, MapPin, Calendar, ExternalLink, ShieldCheck, Tag } from "lucide-react";
 import axios from "axios";
 import ProductCard from "../../components/ProductCard";
 import { toast } from "sonner";
@@ -19,6 +19,11 @@ function SellerProfile() {
             try {
                 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+                if (!id || id === "undefined") {
+                    setLoading(false);
+                    return;
+                }
+
                 // 1. Fetch complete explicit user info (Profile Pic, Phone, Address, etc.)
                 let sellerInfo = null;
                 try {
@@ -34,7 +39,7 @@ function SellerProfile() {
                 // 2. Fetch products and filter
                 const res = await axios.get(`${API_URL}/api/v1/products/getallproducts`);
                 if (res.data.success) {
-                    const sellerProducts = res.data.products.filter(p => p.userId && (p.userId._id === id || p.userId === id));
+                    const sellerProducts = res.data.products.filter(p => p.status === "active" && p.userId && (p.userId._id === id || p.userId === id));
                     setProducts(sellerProducts);
 
                     // If explicit user fetch failed, try extracting basic info from product populated fields
@@ -104,6 +109,7 @@ function SellerProfile() {
                             </div>
 
                             <div className="space-y-4 mb-8">
+
                                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-300 font-medium">
                                     <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center shrink-0">
                                         <Mail size={18} className="text-emerald-500" />

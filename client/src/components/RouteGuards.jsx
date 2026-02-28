@@ -9,6 +9,10 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
         return <Navigate to="/login" replace />;
     }
 
+    if (user?.status === "banned") {
+        return <Navigate to="/banned" replace />;
+    }
+
     if (allowedRoles && (!user || !allowedRoles.includes(user.role))) {
         if (user?.role === "seller") {
             return <Navigate to="/dashboard" replace />;
@@ -22,10 +26,42 @@ export const ProtectedRoute = ({ children, allowedRoles }) => {
     return children;
 };
 
+export const CustomerOnlyRoute = ({ children }) => {
+    const { isAuthenticated, user } = useSelector((state) => state.user);
+
+    if (user?.status === "banned") {
+        return <Navigate to="/banned" replace />;
+    }
+
+    // If logged in as seller, don't allow access to customer pages like products
+    if (isAuthenticated && user?.role === "seller") {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    return children;
+};
+
 export const PublicOnlyRoute = ({ children }) => {
-    const { isAuthenticated } = useSelector((state) => state.user);
+    const { isAuthenticated, user } = useSelector((state) => state.user);
 
     if (isAuthenticated) {
+        if (user?.status === "banned") {
+            return <Navigate to="/banned" replace />;
+        }
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+};
+
+export const BannedOnlyRoute = ({ children }) => {
+    const { isAuthenticated, user } = useSelector((state) => state.user);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (user?.status !== "banned") {
         return <Navigate to="/" replace />;
     }
 

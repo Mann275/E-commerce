@@ -10,7 +10,8 @@ import {
   User as UserIcon,
   Heart,
   MessageCircle,
-  Package
+  Package,
+  Bell
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -20,8 +21,11 @@ import { logout } from "@/redux/userSlice";
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [sellerPendingOrders, setSellerPendingOrders] = useState(0);
   const dropdownRef = useRef(null);
+  const notificationRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -36,6 +40,9 @@ function Navbar() {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotificationOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -74,6 +81,38 @@ function Navbar() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [mobileMenuOpen]);
+
+  // Fetch pending orders for seller notification badge
+  useEffect(() => {
+    const fetchPendingOrders = async () => {
+      if (user?.role === 'seller') {
+        try {
+          const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+          const token = localStorage.getItem("accesstoken");
+          if (!token) return;
+
+          const res = await axios.get(`${API_URL}/api/v1/orders/seller-orders`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (res.data.success) {
+            const pending = res.data.orders.filter(o => o.orderStatus === 'Pending').length;
+            setSellerPendingOrders(pending);
+          }
+        } catch (err) {
+          console.error("Failed to fetch seller notifications");
+        }
+      }
+    };
+    fetchPendingOrders();
+
+    // Set up polling every 30 seconds for live updates
+    let intervalId;
+    if (user?.role === 'seller') {
+      intervalId = setInterval(fetchPendingOrders, 30000);
+    }
+    return () => clearInterval(intervalId);
+  }, [user]);
 
   // Logout function
   const accessToken = localStorage.getItem("accesstoken");
@@ -150,11 +189,22 @@ function Navbar() {
                 </NavLink>
               )}
               {user?.role === "seller" && (
+                <div className="relative">
+                  <NavLink
+                    to="/dashboard"
+                    current={location.pathname.toLowerCase() === "/dashboard"}
+                  >
+                    Dashboard
+                  </NavLink>
+
+                </div>
+              )}
+              {user?.role === "admin" && (
                 <NavLink
-                  to="/dashboard"
-                  current={location.pathname.toLowerCase() === "/dashboard"}
+                  to="/admin-dashboard"
+                  current={location.pathname.startsWith("/admin-dashboard")}
                 >
-                  Dashboard
+                  Admin Panel
                 </NavLink>
               )}
             </div>
@@ -162,6 +212,57 @@ function Navbar() {
 
           {/* RIGHT: Actions */}
           <div className="flex justify-end items-center gap-2 md:gap-4 shrink-0">
+            {/* Seller Notifications */}
+            {user?.role === "seller" && (
+              <div className="relative" ref={notificationRef}>
+                <button
+                  onClick={() => setNotificationOpen(!notificationOpen)}
+                  className="relative p-1.5 md:p-2 rounded-full text-gray-700 hover:text-black hover:bg-gray-200 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors mr-1 md:mr-2"
+                >
+                  <Bell className="w-5 h-5 md:w-5 md:h-5" />
+                  {sellerPendingOrders > 0 && (
+                    <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white shadow-sm border border-white dark:border-black">
+                      {sellerPendingOrders}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notification Dropdown */}
+                {notificationOpen && (
+                  <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white dark:bg-[#1A1A1A] border border-blue-400 dark:border-neutral-800 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in duration-200 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">Notifications</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-500 bg-sky-500/10 px-2 py-1 rounded-md">{sellerPendingOrders} New</span>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                      {sellerPendingOrders > 0 ? (
+                        <Link
+                          to="/dashboard/orders"
+                          onClick={() => setNotificationOpen(false)}
+                          className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors border-b border-gray-50 dark:border-neutral-800/50 last:border-0"
+                        >
+                          <div className="flex gap-3">
+                            <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                              <Package size={16} />
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">You have {sellerPendingOrders} pending order{sellerPendingOrders > 1 ? 's' : ''} waiting for your acceptance or rejection.</p>
+                              <p className="text-xs text-sky-500 font-bold mt-1">Click to view orders</p>
+                            </div>
+                          </div>
+                        </Link>
+                      ) : (
+                        <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                          <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                          <p className="text-sm font-medium">All caught up!</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -249,6 +350,15 @@ function Navbar() {
                           <Package className="w-4 h-4" /> My Orders
                         </Link>
                       )}
+                      {user?.role === "admin" && (
+                        <Link
+                          to="/admin-dashboard"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                        >
+                          <Package className="w-4 h-4" /> Admin Panel
+                        </Link>
+                      )}
                       <div className="h-px bg-gray-200 dark:bg-neutral-800 my-1"></div>
                       <button
                         onClick={() => {
@@ -311,6 +421,13 @@ function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Dashboard
+              </MobileNavLink>
+            ) : user?.role === "admin" ? (
+              <MobileNavLink
+                to="/admin-dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin Panel
               </MobileNavLink>
             ) : (
               <MobileNavLink

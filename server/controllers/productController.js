@@ -4,7 +4,7 @@ import getDataUri from "../utils/dataUri.js";
 
 export const addProduct = async (req, res) => {
     try {
-        const { productName, productDesc, productPrice, category, brand, discountPercentage, quantity } = req.body;
+        const { productName, productDesc, productPrice, category, brand, discountPercentage, quantity, imageUrls } = req.body;
         const userId = req.id;
 
         if (!productName || !productDesc || !productPrice || !category || !brand) {
@@ -20,13 +20,32 @@ export const addProduct = async (req, res) => {
             for (let file of req.files) {
                 const fileUri = getDataUri(file);
                 const result = await cloudinary.uploader.upload(fileUri, {
-                    folder: "Overclocked/Products" // cloudinary folder name
+                    folder: "Overclocked/Products"
                 });
 
                 productImg.push({
                     url: result.secure_url,
                     public_id: result.public_id
                 });
+            }
+        }
+
+        // Handle Image via Links (Multiple)
+        if (imageUrls) {
+            const urls = Array.isArray(imageUrls) ? imageUrls : [imageUrls];
+            for (const url of urls) {
+                if (!url) continue;
+                try {
+                    const result = await cloudinary.uploader.upload(url, {
+                        folder: "Overclocked/Products"
+                    });
+                    productImg.push({
+                        url: result.secure_url,
+                        public_id: result.public_id
+                    });
+                } catch (linkError) {
+                    console.error("Cloudinary Link Upload Error:", linkError);
+                }
             }
         }
 
@@ -57,7 +76,10 @@ export const addProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find().populate("userId", "firstName lastName email").populate("reviews.userId", "firstName lastName profilePic").sort({ createdAt: -1 });
+        const products = await Product.find({})
+            .populate("userId", "firstName lastName profilePic")
+            .sort({ createdAt: -1 });
+
         return res.status(200).json({
             success: true,
             products
@@ -116,7 +138,7 @@ export const deleteProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const { productId } = req.params;
-        const { productName, productDesc, productPrice, category, brand, discountPercentage, quantity, existingImages } = req.body;
+        const { productName, productDesc, productPrice, category, brand, discountPercentage, quantity, existingImages, imageUrls } = req.body;
 
         const product = await Product.findById(productId);
         if (!product) {
@@ -161,6 +183,25 @@ export const updateProduct = async (req, res) => {
                     url: result.secure_url,
                     public_id: result.public_id
                 });
+            }
+        }
+
+        // upload from links if any (Multiple)
+        if (imageUrls) {
+            const urls = Array.isArray(imageUrls) ? imageUrls : [imageUrls];
+            for (const url of urls) {
+                if (!url) continue;
+                try {
+                    const result = await cloudinary.uploader.upload(url, {
+                        folder: "Overclocked/Products"
+                    });
+                    updatedImages.push({
+                        url: result.secure_url,
+                        public_id: result.public_id
+                    });
+                } catch (linkError) {
+                    console.error("Cloudinary Link Upload Error (Update):", linkError);
+                }
             }
         }
 
@@ -257,6 +298,44 @@ export const addReviewToProduct = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export const toggleProductStatus = async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        // Check ownership (Admin can toggle any product, Sellers can only toggle theirs)
+        if (req.user.role !== "admin") {
+            if (!product.userId || product.userId.toString() !== req.id.toString()) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Access denied. Not your product."
+                });
+            }
+        }
+
+        product.status = product.status === "active" ? "inactive" : "active";
+        await product.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Product is now ${product.status}`,
+            status: product.status
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 

@@ -49,7 +49,7 @@ function Login() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -90,6 +90,27 @@ function Login() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemoLogin = (role) => {
+    const demoCreds = {
+      customer: { email: "customer@example.com", password: "Mann123" },
+      admin: { email: "admin@example.com", password: "Mann123" },
+      seller: { email: "seller@example.com", password: "Mann123" }
+    };
+
+    setFormData(demoCreds[role]);
+    setRememberMe(false);
+
+    // Use a small timeout to ensure state is updated before submit
+    setTimeout(() => {
+      const fakeEvent = { preventDefault: () => { } };
+      // We need to call the actual logic here or use a ref/effect
+      // To keep it simple, I'll just trigger the login with direct data passing if I refactor submitHandler, 
+      // but for now, I'll just let the user click "Sign In" after it fills, 
+      // OR better: call a dedicated login function.
+      // Given React batching, it's safer to just provide the buttons that fill the form.
+    }, 100);
   };
 
   return (
@@ -228,6 +249,36 @@ function Login() {
                 Create Account
               </Link>
             </p>
+
+            <div className="w-full pt-4 border-t border-white/10 mt-2">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-4">Demo Accounts</p>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setFormData({ email: "customer@example.com", password: "Mann123" }); }}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/20 text-[10px] h-8 px-0"
+                >
+                  Customer
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setFormData({ email: "admin@example.com", password: "Mann123" }); }}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/20 text-[10px] h-8 px-0"
+                >
+                  Admin
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setFormData({ email: "seller@example.com", password: "Mann123" }); }}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/20 text-[10px] h-8 px-0"
+                >
+                  Seller
+                </Button>
+              </div>
+            </div>
           </CardFooter>
         </Card>
       </div>

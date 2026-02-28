@@ -22,7 +22,8 @@ function Home() {
       {/* Hero Section */}
       <section className="relative flex flex-col justify-center items-center px-4 md:px-0 pt-24 pb-16 md:pt-32 md:pb-20 mb-10 min-h-[70vh]">
         {/* Simple subtle background accent */}
-        <div className="absolute top-0 inset-x-0 h-96 bg-linear-to-b from-blue-500/10 dark:from-blue-600/10 to-transparent pointer-events-none" />
+        <div className="absolute top-0 inset-x-0 h-96 bg-linear-to-b from-blue-500/10 dark:from-blue-600/10 to-transparent pointer-events-none"
+        />
 
         <div className="container mx-auto relative z-10 text-center w-full max-w-5xl">
           <div className="mb-6 md:mb-10">

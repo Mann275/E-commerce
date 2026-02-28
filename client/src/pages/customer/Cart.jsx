@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, ArrowRight, ArrowLeft, ShieldCheck, CreditCard, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { useSelector, useDispatch } from "react-redux";
 import { updateQuantity as updateCartQuantity, removeFromCart, syncRemoveFromCart, syncUpdateQuantity } from "../../redux/cartSlice";
 
@@ -12,6 +13,16 @@ function Cart() {
     const handleUpdateQuantity = (id, newQuantity) => {
         if (newQuantity < 1) return;
         const currentItem = cartItems.find(item => item._id === id);
+
+        // Product existence check (if they are 404 in DB)
+        if (!currentItem) return;
+
+        // Prevent increasing beyond available stock
+        if (newQuantity > currentItem.quantity && newQuantity > currentItem?.stock) {
+            toast.warning(`Only ${currentItem.stock} units available in stock.`);
+            return;
+        }
+
         dispatch(updateCartQuantity({ id, quantity: newQuantity }));
         dispatch(syncUpdateQuantity({ id, quantity: newQuantity, originalQuantity: currentItem?.quantity }));
     };
@@ -26,6 +37,7 @@ function Cart() {
     const tax = subtotal * 0.18; // 18% GST example
     const shipping = subtotal > 50000 ? 0 : 500;
     const total = subtotal + tax + shipping;
+    const hasInvalidItems = cartItems.some(item => item.status === 'inactive' || item.quantity <= 0);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-black transition-colors duration-300 pt-24 pb-20">
@@ -69,8 +81,17 @@ function Cart() {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         key={item._id}
-                                        className="bg-white dark:bg-zinc-950 border border-blue-400/30 dark:border-blue-500/30 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-center shadow-sm hover:shadow-md transition-shadow"
+                                        className={`bg-white dark:bg-zinc-950 border rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row gap-6 items-center shadow-sm hover:shadow-md transition-shadow relative overflow-hidden
+                                            ${item.status === 'inactive' || item.quantity <= 0
+                                                ? 'border-rose-500/50 grayscale-[0.8]'
+                                                : 'border-blue-400/30 dark:border-blue-500/30'}
+                                        `}
                                     >
+                                        {(item.status === 'inactive' || item.quantity <= 0) && (
+                                            <div className="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl z-10">
+                                                {item.status === 'inactive' ? 'Currently Unavailable' : 'Out of Stock'}
+                                            </div>
+                                        )}
                                         <div className="w-full sm:w-32 aspect-square bg-gray-50 dark:bg-black rounded-xl p-2 flex-shrink-0">
                                             <img src={item.productImg && item.productImg.length > 0 ? item.productImg[0].url : "https://via.placeholder.com/400"} alt={item.productName} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal" />
                                         </div>
@@ -147,19 +168,34 @@ function Cart() {
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-gray-200 dark:border-white/10 mb-8">
-                                    <div className="flex justify-between items-end">
+                                <div className="pt-4 border-t border-gray-200 dark:border-white/10 mb-6">
+                                    <div className="flex justify-between items-end mb-8">
                                         <span className="text-lg font-bold text-gray-900 dark:text-white">Total</span>
                                         <span className="text-3xl font-black text-sky-500">₹{total.toLocaleString()}</span>
                                     </div>
+
                                 </div>
 
-                                <button className="w-full py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-sky-500/25 mb-6 relative group overflow-hidden">
-                                    <span className="relative z-10 flex items-center gap-2">
-                                        Proceed to Checkout <ArrowRight size={20} />
+                                <Link
+                                    to={hasInvalidItems ? "#" : "/checkout"}
+                                    onClick={(e) => { if (hasInvalidItems) { e.preventDefault(); toast.error("Please remove unavailable items before proceeding."); } }}
+                                    className={`w-full py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg mb-6 relative group overflow-hidden
+                                        ${hasInvalidItems
+                                            ? "bg-gray-200 dark:bg-zinc-800 text-gray-500 cursor-not-allowed"
+                                            : "bg-sky-500 hover:bg-sky-600 text-white shadow-sky-500/25"}
+                                    `}
+                                >
+                                    <span className="relative z-10 flex items-center gap-2 text-sm font-bold">
+                                        {hasInvalidItems ? "Review Items" : "Proceed to Checkout"} <ArrowRight size={20} />
                                     </span>
                                     <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
-                                </button>
+                                </Link>
+
+                                {hasInvalidItems && (
+                                    <p className="text-[10px] font-bold text-rose-500 text-center mb-6 uppercase tracking-wider">
+                                        ⚠️ Some items in your cart are no longer available.
+                                    </p>
+                                )}
 
                                 {/* Trust Badges */}
                                 <div className="space-y-3">

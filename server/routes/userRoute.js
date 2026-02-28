@@ -34,6 +34,12 @@ router.get("/get-user/:id", getUserById);
 router.put("/change-password", isAuthenticated, changePassword);
 router.put("/update/:id", isAuthenticated, uploadSingle, updateUser);
 
+// Quick validation endpoint for Interceptor syncing
+router.get("/me", isAuthenticated, (req, res, next) => {
+  req.params.id = req.id;
+  next();
+}, getUserById);
+
 // Address Management Routes
 router.post("/address", isAuthenticated, addUserAddress);
 router.put("/address/:addressId", isAuthenticated, editUserAddress);
