@@ -49,10 +49,18 @@ function Verify() {
           <h2 className="text-2xl font-bold text-white drop-shadow-lg mb-4">
             Check Your Email
           </h2>
-          <p className="text-gray-100 drop-shadow">
+          <p className="text-gray-100 drop-shadow mb-6">
             We've sent a verification link to your email address. Please check
             your inbox and click the link to verify your account.
           </p>
+          <a
+            href="https://mail.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-[0_0_15px_rgba(14,165,233,0.5)] hover:shadow-[0_0_25px_rgba(14,165,233,0.7)]"
+          >
+            Go to Email
+          </a>
         </div>
       </div>
     </div>

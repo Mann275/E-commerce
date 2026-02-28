@@ -20,7 +20,7 @@ const Footer = () => {
               <div className="flex items-center gap-2 group cursor-pointer w-fit">
                 <img
                   src="https://res.cloudinary.com/mann2729/image/upload/v1772097164/logo_xdduls.png"
-                  
+
                   alt="Logo"
                   className="w-7 h-7 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-transform group-hover:scale-110"
                 />
@@ -50,9 +50,7 @@ const Footer = () => {
               <li>
                 <FooterLink to="/about">About Us</FooterLink>
               </li>
-              <li>
-                <FooterLink to="/offers">Offers</FooterLink>
-              </li>
+
               <li>
                 <FooterLink to="/contact">Contact Us</FooterLink>
               </li>

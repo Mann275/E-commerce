@@ -4,8 +4,6 @@ import connectDB from "./Database/db.js";
 import Product from "./models/productModel.js";
 import User from "./models/userModel.js";
 
-
-
 const seedProducts = async () => {
     await connectDB();
 
@@ -84,7 +82,7 @@ const seedProducts = async () => {
                         quantity: 15,
                         discountPercentage: 10,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&q=80&w=800", public_id: "ram_1" }
+                            { url: "https://images.unsplash.com/photo-1541029071515-84cc54f84dc5?auto=format&fit=crop&q=80&w=800", public_id: "ram_1" }
                         ],
                         userId: sellerId
                     },
@@ -97,7 +95,8 @@ const seedProducts = async () => {
                         quantity: 40,
                         discountPercentage: 12,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1628557044797-f21a177c37ec?auto=format&fit=crop&q=80&w=800", public_id: "ssd_1" }
+                            { url: "https://images.unsplash.com/photo-1597138804456-e7dca7f59d54?auto=format&fit=crop&q=80&w=800", public_id: "ssd_1" },
+                            { url: "https://images.unsplash.com/photo-1650526573230-8f8dfb89e509?auto=format&fit=crop&q=80&w=800", public_id: "ssd_2" }
                         ],
                         userId: sellerId
                     }
@@ -114,7 +113,7 @@ const seedProducts = async () => {
                         quantity: 10,
                         discountPercentage: 0,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1587202372742-df113d7ceebc?auto=format&fit=crop&q=80&w=800", public_id: "cooler_1" }
+                            { url: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?auto=format&fit=crop&q=80&w=800", public_id: "cooler_1" }
                         ],
                         userId: sellerId
                     },
@@ -127,7 +126,7 @@ const seedProducts = async () => {
                         quantity: 14,
                         discountPercentage: 8,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1555617781-dbdc797204fc?auto=format&fit=crop&q=80&w=800", public_id: "psu_1" }
+                            { url: "https://images.unsplash.com/photo-1529961172671-d48e8280f846?auto=format&fit=crop&q=80&w=800", public_id: "psu_1" }
                         ],
                         userId: sellerId
                     },
@@ -140,7 +139,7 @@ const seedProducts = async () => {
                         quantity: 22,
                         discountPercentage: 5,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1587831990711-23ca6441447b?auto=format&fit=crop&q=80&w=800", public_id: "case_1" },
+                            { url: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&q=80&w=800", public_id: "case_1" },
                             { url: "https://images.unsplash.com/photo-1600861194942-f883de0dfe96?auto=format&fit=crop&q=80&w=800", public_id: "case_3" }
                         ],
                         userId: sellerId
@@ -167,7 +166,8 @@ const seedProducts = async () => {
                         quantity: 6,
                         discountPercentage: 0,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&q=80&w=800", public_id: "gpu_3" }
+                            { url: "https://images.unsplash.com/photo-1727176763565-1d983341bb95?auto=format&fit=crop&q=80&w=800", public_id: "gpu_3" },
+                            { url: "https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&q=80&w=800", public_id: "gpu_4" }
                         ],
                         userId: sellerId
                     }
@@ -210,7 +210,7 @@ const seedProducts = async () => {
                         quantity: 12,
                         discountPercentage: 8,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1628557044797-f21a177c37ec?auto=format&fit=crop&q=80&w=800", public_id: "ssd_2" }
+                            { url: "https://images.unsplash.com/photo-1721332149267-ef9b10eaacd9?auto=format&fit=crop&q=80&w=800", public_id: "ssd_2" }
                         ],
                         userId: sellerId
                     },
@@ -223,7 +223,8 @@ const seedProducts = async () => {
                         quantity: 20,
                         discountPercentage: 5,
                         productImg: [
-                            { url: "https://images.unsplash.com/photo-1555617781-dbdc797204fc?auto=format&fit=crop&q=80&w=800", public_id: "psu_2" }
+
+                            { url: "https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&q=80&w=800", public_id: "psu_2" }
                         ],
                         userId: sellerId
                     },
