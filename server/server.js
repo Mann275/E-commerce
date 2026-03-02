@@ -19,10 +19,25 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
-app.use(express.json());
 
+// Parse JSON bodies (only once!)
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Debug middleware to log request bodies in production
+if (process.env.NODE_ENV === "production") {
+  app.use((req, res, next) => {
+    if (req.body && Object.keys(req.body).length > 0) {
+      console.log(
+        `📦 Request Body for ${req.method} ${req.url}:`,
+        JSON.stringify(req.body).substring(0, 200),
+      );
+    }
+    next();
+  });
+}
+
+// CORS Configuration
 app.use(
   cors({
     origin: [
@@ -32,10 +47,25 @@ app.use(
       /^https:\/\/.*\.vercel\.app$/, // Allows all Vercel preview domains
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
-// localhost:8000/api/v1/users/
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({
+    status: "OK",
+    message: "Server is running",
+    env: {
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasMongoUri: !!process.env.MONGO_URI,
+      nodeEnv: process.env.NODE_ENV || "development",
+    },
+  });
+});
+
+// API Routes
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/cart", cartRoute);

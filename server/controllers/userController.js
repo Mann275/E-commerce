@@ -32,7 +32,8 @@ export const register = async (req, res) => {
     if (validConditions < 3) {
       return res.status(400).json({
         success: false,
-        message: "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
+        message:
+          "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
       });
     }
 
@@ -44,6 +45,16 @@ export const register = async (req, res) => {
       password: hashedPassword,
       role: role || "customer",
     });
+
+    // Check if JWT_SECRET exists
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET is not defined!");
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error",
+      });
+    }
+
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "10m",
     });
@@ -147,12 +158,21 @@ export const reverify = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
+    console.log("📥 Login Request Body:", req.body);
     const { email, password } = req.body;
+
     if (!email || !password) {
+      console.log(
+        "❌ Missing fields - email:",
+        email,
+        "password:",
+        password ? "exists" : "missing",
+      );
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res
@@ -169,6 +189,15 @@ export const login = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Email is not verified. Please verify your email.",
+      });
+    }
+
+    // Check if JWT_SECRET exists
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET is not defined in environment variables!");
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error. Please contact administrator.",
       });
     }
 
@@ -322,7 +351,8 @@ export const resetPassword = async (req, res) => {
     if (validConditions < 3) {
       return res.status(400).json({
         success: false,
-        message: "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
+        message:
+          "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
       });
     }
 
@@ -417,7 +447,8 @@ export const changePassword = async (req, res) => {
     if (validConditions < 3) {
       return res.status(400).json({
         success: false,
-        message: "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
+        message:
+          "Password is too weak. It must satisfy at least 3 of these conditions: 8+ characters, uppercase, lowercase, number, special character.",
       });
     }
 
@@ -437,8 +468,17 @@ export const updateUser = async (req, res) => {
   try {
     const userIdToUpdate = req.params.id;
     const loggedInUserId = req.id;
-    const { firstName, lastName, phoneNo, address, city, pincode, role, showPhone, showEmail } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      phoneNo,
+      address,
+      city,
+      pincode,
+      role,
+      showPhone,
+      showEmail,
+    } = req.body;
 
     const loggedInUser = await User.findById(loggedInUserId);
     if (!loggedInUser) {
@@ -497,8 +537,10 @@ export const updateUser = async (req, res) => {
     user.phoneNo = phoneNo !== undefined ? phoneNo : user.phoneNo;
 
     // Privacy toggles (can be literal false so we use explicit checking)
-    if (showPhone !== undefined) user.showPhone = showPhone === 'true' || showPhone === true;
-    if (showEmail !== undefined) user.showEmail = showEmail === 'true' || showEmail === true;
+    if (showPhone !== undefined)
+      user.showPhone = showPhone === "true" || showPhone === true;
+    if (showEmail !== undefined)
+      user.showEmail = showEmail === "true" || showEmail === true;
 
     user.address = address !== undefined ? address : user.address;
     user.city = city !== undefined ? city : user.city;
@@ -524,16 +566,23 @@ export const addUserAddress = async (req, res) => {
     const { address, city, pincode } = req.body;
 
     if (!address || !city || !pincode) {
-      return res.status(400).json({ success: false, message: "All address fields are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "All address fields are required" });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
     user.addresses.push({ address, city, pincode });
     await user.save();
 
-    return res.status(200).json({ success: true, message: "Address added successfully", user });
+    return res
+      .status(200)
+      .json({ success: true, message: "Address added successfully", user });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -546,21 +595,37 @@ export const editUserAddress = async (req, res) => {
     const { address, city, pincode } = req.body;
 
     if (!address || !city || !pincode) {
-      return res.status(400).json({ success: false, message: "All address fields are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "All address fields are required" });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
-    const addrIndex = user.addresses.findIndex(addr => addr._id.toString() === addressId);
+    const addrIndex = user.addresses.findIndex(
+      (addr) => addr._id.toString() === addressId,
+    );
     if (addrIndex === -1) {
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found" });
     }
 
-    user.addresses[addrIndex] = { ...user.addresses[addrIndex], address, city, pincode };
+    user.addresses[addrIndex] = {
+      ...user.addresses[addrIndex],
+      address,
+      city,
+      pincode,
+    };
     await user.save();
 
-    return res.status(200).json({ success: true, message: "Address updated successfully", user });
+    return res
+      .status(200)
+      .json({ success: true, message: "Address updated successfully", user });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -572,12 +637,19 @@ export const removeUserAddress = async (req, res) => {
     const { addressId } = req.params;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
 
-    user.addresses = user.addresses.filter(addr => addr._id.toString() !== addressId);
+    user.addresses = user.addresses.filter(
+      (addr) => addr._id.toString() !== addressId,
+    );
     await user.save();
 
-    return res.status(200).json({ success: true, message: "Address removed successfully", user });
+    return res
+      .status(200)
+      .json({ success: true, message: "Address removed successfully", user });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
