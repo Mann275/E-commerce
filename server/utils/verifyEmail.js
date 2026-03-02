@@ -4,8 +4,9 @@ import { welcomeEmailTemplate } from "./EmailTemplet.js";
 export const verifyEmail = async (firstName, token, email) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    port: 587, // 465 is blocked by Render, use 587 (STARTTLS)
+    secure: false, // false = STARTTLS (upgrades after connection)
+    requireTLS: true,
     family: 4, // Force IPv4 — Render doesn't support IPv6
     auth: {
       user: process.env.MAIL_USER,
