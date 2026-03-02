@@ -16,7 +16,11 @@ import {
   editUserAddress,
   removeUserAddress,
 } from "../controllers/userController.js";
-import { isAdmin, isAuthenticated } from "../middleware/isAuthenticated.js";
+import {
+  isAdmin,
+  isAuthenticated,
+  isAuthenticatedAllowBanned,
+} from "../middleware/isAuthenticated.js";
 import { uploadSingle } from "../middleware/multer.js";
 
 const router = express.Router();
@@ -25,7 +29,7 @@ router.post("/register", register);
 router.post("/verify", verify);
 router.post("/reverify", reverify);
 router.post("/login", login);
-router.post("/logout", isAuthenticated, logout);
+router.post("/logout", isAuthenticatedAllowBanned, logout);
 router.post("/forgotpassword", forgotPassword);
 router.post("/verify-otp/:email", verifyOTP);
 router.post("/reset-password/:email", resetPassword);
@@ -34,11 +38,16 @@ router.get("/get-user/:id", getUserById);
 router.put("/change-password", isAuthenticated, changePassword);
 router.put("/update/:id", isAuthenticated, uploadSingle, updateUser);
 
-// Quick validation endpoint for Interceptor syncing
-router.get("/me", isAuthenticated, (req, res, next) => {
-  req.params.id = req.id;
-  next();
-}, getUserById);
+// Quick validation endpoint for Interceptor syncing - allows banned users to check status
+router.get(
+  "/me",
+  isAuthenticatedAllowBanned,
+  (req, res, next) => {
+    req.params.id = req.id;
+    next();
+  },
+  getUserById,
+);
 
 // Address Management Routes
 router.post("/address", isAuthenticated, addUserAddress);

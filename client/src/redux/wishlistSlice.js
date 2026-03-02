@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import apiClient from "../api/axiosInstance";
+import { wishlistService } from "../services";
 
 export const fetchWishlist = createAsyncThunk(
   "wishlist/fetchWishlist",
@@ -9,8 +9,8 @@ export const fetchWishlist = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return { wishlist: { items: [] } };
 
-      const res = await apiClient.get("/wishlist");
-      return res.data;
+      const data = await wishlistService.getWishlist();
+      return data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch wishlist",
@@ -26,10 +26,8 @@ export const syncAddToWishlist = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return rejectWithValue("Not authenticated");
 
-      const res = await apiClient.post("/wishlist/add", {
-        productId: product._id,
-      });
-      return res.data;
+      const data = await wishlistService.addToWishlist(product._id);
+      return data;
     } catch (error) {
       return rejectWithValue({
         error: error.response?.data?.message || "Failed to sync wishlist",
@@ -46,10 +44,8 @@ export const syncRemoveFromWishlist = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return rejectWithValue("Not authenticated");
 
-      const res = await apiClient.post("/wishlist/remove", {
-        productId: product._id,
-      });
-      return res.data;
+      const data = await wishlistService.removeFromWishlist(product._id);
+      return data;
     } catch (error) {
       return rejectWithValue({
         error:

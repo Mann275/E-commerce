@@ -23,6 +23,7 @@
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
+- [📚 Architecture Documentation](#-architecture-documentation)
 - [Getting Started](#-getting-started)
 - [Installation](#-installation)
 - [Environment Variables](#-environment-variables)
@@ -154,6 +155,66 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 
 </div>
+
+---
+
+## 📚 Architecture Documentation
+
+This project follows **industry-standard architecture** with complete separation of concerns. Detailed documentation available:
+
+### 📖 Complete Documentation Suite
+
+| Document                  | Description                                                                                      | Link                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| 🔄 **DATA_FLOW_GUIDE.md** | **Complete data flow with diagrams** <br/>Login flow, Cart flow, Order flow, Authentication flow | [View Guide](./DATA_FLOW_GUIDE.md)     |
+| 🏗️ **ARCHITECTURE.md**    | **Industry-standard architecture explanation** <br/>Services, Redux, Context API, Best practices | [View Architecture](./ARCHITECTURE.md) |
+| 🚀 **QUICK_START.md**     | **Ready-to-use code examples** <br/>Common tasks, Usage patterns, Decision tree                  | [View Quick Start](./QUICK_START.md)   |
+| 🔄 **MIGRATION_GUIDE.md** | **Migrate old code to new architecture** <br/>Before/After examples, Step-by-step process        | [View Migration](./MIGRATION_GUIDE.md) |
+
+### 🎯 Quick Navigation
+
+**Need to understand:**
+
+- **How data flows?** → Read [DATA_FLOW_GUIDE.md](./DATA_FLOW_GUIDE.md) - Complete visual diagrams
+- **Architecture theory?** → Read [ARCHITECTURE.md](./ARCHITECTURE.md) - Layer-by-layer explanation
+- **Quick examples?** → Read [QUICK_START.md](./QUICK_START.md) - Copy-paste ready code
+- **Migrate old code?** → Read [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) - Before/After patterns
+
+### 🏛️ Architecture Overview
+
+```
+Frontend (React)
+├── Pages/Components (UI Layer)
+│   └── User interactions
+├── Context API (Auth state)
+│   └── login, logout, signup
+├── Redux Store (Global state)
+│   └── cart, wishlist, user, products
+├── Services Layer (API calls)
+│   ├── authService
+│   ├── productService
+│   ├── cartService
+│   ├── orderService
+│   └── adminService
+└── Axios Instance
+    └── Token management, interceptors
+
+Backend (Node.js + Express)
+├── Routes (API endpoints)
+├── Middleware (Authentication)
+├── Controllers (Business logic)
+├── Models (MongoDB schemas)
+└── Database (MongoDB)
+```
+
+### ✨ Key Features
+
+✅ **Services Layer** - All API calls centralized  
+✅ **Redux Slices** - State management with async thunks  
+✅ **Context API** - Authentication state  
+✅ **Auto Token Refresh** - Seamless user experience  
+✅ **Optimistic Updates** - Instant UI feedback  
+✅ **Error Handling** - Consistent across layers
 
 ---
 

@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import apiClient from "../api/axiosInstance";
+import { cartService } from "../services";
 
-// --- Async Thunks for Cart Synchronization ---
+// --- Async Thunks for Cart Synchronization using cartService ---
 
 export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
@@ -11,8 +11,8 @@ export const fetchCart = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return { cart: { items: [] } };
 
-      const res = await apiClient.get("/cart");
-      return res.data;
+      const data = await cartService.getCart();
+      return data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch cart",
@@ -32,11 +32,11 @@ export const syncAddToCart = createAsyncThunk(
       if (!token) return rejectWithValue("Not authenticated");
 
       // We only send the minimum data needed by the backend
-      const res = await apiClient.post(
-        "/cart/add",
-        { productId: product._id, quantity: product.quantity || 1 }
+      const data = await cartService.addToCart(
+        product._id,
+        product.quantity || 1,
       );
-      return res.data;
+      return data;
     } catch (error) {
       // Pass the original product back so we can rollback
       return rejectWithValue({
@@ -54,11 +54,8 @@ export const syncRemoveFromCart = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return rejectWithValue("Not authenticated");
 
-      const res = await apiClient.post(
-        "/cart/remove",
-        { productId: product._id }
-      );
-      return res.data;
+      const data = await cartService.removeFromCart(product._id);
+      return data;
     } catch (error) {
       return rejectWithValue({
         error:
@@ -76,11 +73,8 @@ export const syncUpdateQuantity = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return rejectWithValue("Not authenticated");
 
-      const res = await apiClient.put(
-        "/cart/update",
-        { productId: id, quantity }
-      );
-      return res.data;
+      const data = await cartService.updateCartItem(id, quantity);
+      return data;
     } catch (error) {
       return rejectWithValue({
         error: error.response?.data?.message || "Failed to sync quantity",
@@ -98,8 +92,8 @@ export const syncClearCart = createAsyncThunk(
       const token = localStorage.getItem("accesstoken");
       if (!token) return rejectWithValue("Not authenticated");
 
-      const res = await apiClient.delete("/cart/clear");
-      return res.data;
+      const data = await cartService.clearCart();
+      return data;
     } catch (error) {
       return rejectWithValue({
         error: error.response?.data?.message || "Failed to clear cart",

@@ -1,11 +1,12 @@
 import express from "express";
 import { isAdmin, isAuthenticated } from "../middleware/isAuthenticated.js";
 import {
-    getAdminAnalytics,
-    getAllUsers,
-    updateUserRole,
-    toggleUserBanStatus,
-    getAllGlobalOrders
+  getAdminAnalytics,
+  getAllUsers,
+  updateUserRole,
+  toggleUserBanStatus,
+  deleteUser,
+  getAllGlobalOrders,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -20,8 +21,9 @@ router.get("/analytics", getAdminAnalytics);
 router.get("/users", getAllUsers);
 router.put("/users/role/:id", updateUserRole);
 router.put("/users/ban/:id", toggleUserBanStatus);
+router.delete("/users/:id", deleteUser);
 
-// Order Management 
+// Order Management
 router.get("/orders", getAllGlobalOrders);
 
 export default router;

@@ -1,9 +1,9 @@
 import React, { createContext, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "sonner";
 import { setUser } from "../redux/userSlice";
+import { authService } from "../services";
 
 const AuthContext = createContext(null);
 
@@ -18,25 +18,22 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
   // ============================================================================
-  // LOGIN FUNCTION - Centralized authentication logic
+  // LOGIN FUNCTION - Centralized authentication logic using authService
   // ============================================================================
   const login = async (formData, rememberMe = false) => {
     try {
-      const res = await axios.post(`${API_URL}/api/v1/users/login`, formData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const data = await authService.login(formData);
 
-      if (res.data.success) {
+      if (data.success) {
         // Store tokens and user data
-        localStorage.setItem("accesstoken", res.data.accesstoken);
-        localStorage.setItem("refreshtoken", res.data.refreshtoken);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("accesstoken", data.accesstoken);
+        localStorage.setItem("refreshtoken", data.refreshtoken);
+        localStorage.setItem("user", JSON.stringify(data.user));
 
         // Dispatch user to Redux store
-        dispatch(setUser(res.data.user));
+        dispatch(setUser(data.user));
 
         // Handle Remember Me
         if (rememberMe) {
@@ -47,10 +44,10 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem("rememberedPassword");
         }
 
-        toast.success(res.data.message);
+        toast.success(data.message);
         navigate("/");
 
-        return { success: true, data: res.data };
+        return { success: true, data };
       }
     } catch (error) {
       console.error("Error during login:", error);
@@ -68,22 +65,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ============================================================================
-  // SIGNUP FUNCTION - Centralized registration logic
+  // SIGNUP FUNCTION - Centralized registration logic using authService
   // ============================================================================
   const signup = async (formData) => {
     try {
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/register`,
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const data = await authService.register(formData);
 
-      if (res.data.success) {
-        toast.success(res.data.message);
+      if (data.success) {
+        toast.success(data.message);
         navigate("/verify", { state: { fromSignup: true } });
-        return { success: true, data: res.data };
+        return { success: true, data };
       }
     } catch (error) {
       console.error("Error during signup:", error);
@@ -105,28 +96,10 @@ export const AuthProvider = ({ children }) => {
   // ============================================================================
   const logout = async () => {
     try {
-      const token = localStorage.getItem("accesstoken");
-
-      if (token) {
-        // Optional: Call backend logout API if you have one
-        await axios
-          .post(
-            `${API_URL}/api/v1/users/logout`,
-            {},
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          )
-          .catch(() => {
-            // Silent fail - proceed with local logout anyway
-          });
-      }
-
-      // Clear all auth data
-      localStorage.removeItem("accesstoken");
-      localStorage.removeItem("refreshtoken");
-      localStorage.removeItem("user");
-
+      // Call backend logout API
+      await authService.logout().catch(() => {
+        // Silent fail - proceed with local logout anyway
+      });
       // Clear Redux state
       dispatch(setUser(null));
 
@@ -163,18 +136,12 @@ export const AuthProvider = ({ children }) => {
   // ============================================================================
   const verifyOTP = async (email, otp) => {
     try {
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/verify-email`,
-        { email, otp },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const data = await authService.verifyOTP(otp);
 
-      if (res.data.success) {
-        toast.success(res.data.message);
+      if (data.success) {
+        toast.success(data.message);
         navigate("/login");
-        return { success: true, data: res.data };
+        return { success: true, data };
       }
     } catch (error) {
       console.error("Error during OTP verification:", error);
@@ -184,21 +151,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ============================================================================
-  // RESEND OTP FUNCTION
+  // RESEND OTP FUNCTION using authService
   // ============================================================================
   const resendOTP = async (email) => {
     try {
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/resend-otp`,
-        { email },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const data = await authService.resendOTP();
 
-      if (res.data.success) {
-        toast.success(res.data.message || "OTP sent successfully");
-        return { success: true, data: res.data };
+      if (data.success) {
+        toast.success(data.message || "OTP sent successfully");
+        return { success: true, data };
       }
     } catch (error) {
       console.error("Error resending OTP:", error);
@@ -208,21 +169,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ============================================================================
-  // FORGOT PASSWORD FUNCTION
+  // FORGOT PASSWORD FUNCTION using authService
   // ============================================================================
   const forgotPassword = async (email) => {
     try {
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/forgot-password`,
-        { email },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const data = await authService.forgotPassword(email);
 
-      if (res.data.success) {
-        toast.success(res.data.message);
-        return { success: true, data: res.data };
+      if (data.success) {
+        toast.success(data.message);
+        return { success: true, data };
       }
     } catch (error) {
       console.error("Error in forgot password:", error);
@@ -232,22 +187,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ============================================================================
-  // RESET PASSWORD FUNCTION
+  // RESET PASSWORD FUNCTION using authService
   // ============================================================================
   const resetPassword = async (token, newPassword) => {
     try {
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/reset-password/${token}`,
-        { password: newPassword },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const data = await authService.resetPassword(token, newPassword);
 
-      if (res.data.success) {
-        toast.success(res.data.message);
+      if (data.success) {
+        toast.success(data.message);
         navigate("/login");
-        return { success: true, data: res.data };
+        return { success: true, data };
       }
     } catch (error) {
       console.error("Error resetting password:", error);

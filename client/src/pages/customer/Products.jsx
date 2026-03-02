@@ -163,7 +163,7 @@ function Products() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none pl-4 pr-10 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-sky-500 dark:focus:border-sky-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer shadow-sm min-w-[140px]"
+                className="appearance-none pl-4 pr-10 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-sky-500 dark:focus:border-sky-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer shadow-sm min-w-35"
               >
 
                 <option value="newest">Newest Arrivals</option>
@@ -190,9 +190,9 @@ function Products() {
           />
 
           {/* Product Grid */}
-          <div className="flex-1 w-full relative min-h-[100vh]">
+          <div className="flex-1 w-full relative min-h-screen">
             {loading ? (
-              <div className="absolute inset-0 flex items-center justify-center min-h-[400px]">
+              <div className="absolute inset-0 flex items-center justify-center min-h-100">
                 <PageLoader />
               </div>
             ) : filteredProducts.length === 0 ? (
@@ -217,7 +217,7 @@ function Products() {
                   onClick={() => setDisplayCount(prev => prev + 9)}
                   className="px-8 py-3 bg-white dark:bg-zinc-900 border border-blue-400/30 dark:border-blue-500/30 text-gray-900 dark:text-white font-semibold rounded-full hover:border-sky-500 hover:text-sky-500 dark:hover:border-sky-500 dark:hover:text-sky-400 transition-colors shadow-sm relative group overflow-hidden">
                   <span className="relative z-10">Load More Products</span>
-                  <div className="absolute inset-0 bg-sky-50 dark:bg-sky-500/10 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
+                  <div className="absolute inset-0 bg-sky-50 dark:bg-sky-500/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
                 </button>
               </div>
             )}
