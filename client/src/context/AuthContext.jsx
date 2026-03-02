@@ -80,7 +80,9 @@ export const AuthProvider = ({ children }) => {
 
       if (data.success) {
         toast.success(data.message);
-        navigate("/verify", { state: { fromSignup: true } });
+        navigate("/verify", {
+          state: { fromSignup: true, email: formData.email },
+        });
         return { success: true, data };
       }
     } catch (error) {

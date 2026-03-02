@@ -1,21 +1,23 @@
-import axios from "axios";
+import apiClient from "../../api/axiosInstance";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Loader } from "lucide-react";
 import { toast } from "sonner";
 import PageLoader from "../../components/PageLoader";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/userSlice";
 
 function VerifyEmail() {
   const { token } = useParams();
   const [status, setStatus] = useState("Verifying...");
   const [isVerifying, setIsVerifying] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const verifyEmail = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/verify`,
+      const res = await apiClient.post(
+        `/users/verify`,
         {},
         {
           headers: {
@@ -31,6 +33,9 @@ function VerifyEmail() {
         localStorage.setItem("accesstoken", res.data.accesstoken);
         localStorage.setItem("refreshtoken", res.data.refreshtoken);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        // Update Redux store so user is logged in immediately without reload
+        dispatch(setUser(res.data.user));
 
         toast.success(res.data.message);
 
@@ -69,7 +74,9 @@ function VerifyEmail() {
         className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-1.5 md:gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-white/20 shadow-lg"
       >
         <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-        <span className="font-medium text-sm md:text-base hidden sm:inline">Back to Home</span>
+        <span className="font-medium text-sm md:text-base hidden sm:inline">
+          Back to Home
+        </span>
       </Link>
 
       {/* Logo */}
@@ -86,7 +93,7 @@ function VerifyEmail() {
 
       {/* Verification Status */}
       <div
-        className="bg-black/60 backdrop-blur-xl p-8 rounded-2xl border border-white/30 w-full max-w-md shadow-2xl z-40 text-center mx-4 flex flex-col items-center justify-center min-h-[300px]"
+        className="bg-black/60 backdrop-blur-xl p-8 rounded-2xl border border-white/30 w-full max-w-md shadow-2xl z-40 text-center mx-4 flex flex-col items-center justify-center min-h-75"
         style={{ pointerEvents: "auto" }}
       >
         {isVerifying ? (

@@ -20,7 +20,7 @@ import {
   KeyRound,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../../api/axiosInstance";
 import { toast } from "sonner";
 
 function ForgotPassword() {
@@ -50,7 +50,9 @@ function ForgotPassword() {
   }, []);
 
   const isPasswordValid = useMemo(() => {
-    const validCount = passwordRequirements.filter((req) => req.test(newPassword)).length;
+    const validCount = passwordRequirements.filter((req) =>
+      req.test(newPassword),
+    ).length;
     return validCount >= 3;
   }, [newPassword, passwordRequirements]);
 
@@ -81,14 +83,7 @@ function ForgotPassword() {
     }
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/forgotpassword`,
-        { email },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const res = await apiClient.post(`/users/forgotpassword`, { email });
       if (res.data.success) {
         toast.success(res.data.message);
         setStep(2);
@@ -114,14 +109,7 @@ function ForgotPassword() {
     }
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/verify-otp/${email}`,
-        { otp },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const res = await apiClient.post(`/users/verify-otp/${email}`, { otp });
       if (res.data.success) {
         toast.success(res.data.message);
         setStep(3);
@@ -155,14 +143,10 @@ function ForgotPassword() {
     }
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/reset-password/${email}`,
-        { newPassword, confirmPassword },
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const res = await apiClient.post(`/users/reset-password/${email}`, {
+        newPassword,
+        confirmPassword,
+      });
       if (res.data.success) {
         toast.success(res.data.message);
         setTimeout(() => {
@@ -174,7 +158,9 @@ function ForgotPassword() {
       if (!error.response) {
         toast.error("Server is not running or unreachable.");
       } else {
-        toast.error(error.response?.data?.message || "Failed to reset password");
+        toast.error(
+          error.response?.data?.message || "Failed to reset password",
+        );
       }
     } finally {
       setLoading(false);
@@ -193,7 +179,9 @@ function ForgotPassword() {
         className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-1.5 md:gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-white/20 shadow-lg"
       >
         <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-        <span className="font-medium text-sm md:text-base hidden sm:inline">Back to Login</span>
+        <span className="font-medium text-sm md:text-base hidden sm:inline">
+          Back to Login
+        </span>
       </Link>
 
       {/* Logo */}
@@ -328,16 +316,17 @@ function ForgotPassword() {
                           Password Strength
                         </span>
                         <span
-                          className={`text-xs font-medium ${getPasswordStrength.text === "Strong"
-                            ? "text-green-400"
-                            : getPasswordStrength.text === "Good"
-                              ? "text-blue-400"
-                              : getPasswordStrength.text === "Medium"
-                                ? "text-yellow-400"
-                                : getPasswordStrength.text === "Weak"
-                                  ? "text-orange-400"
-                                  : "text-red-400"
-                            }`}
+                          className={`text-xs font-medium ${
+                            getPasswordStrength.text === "Strong"
+                              ? "text-green-400"
+                              : getPasswordStrength.text === "Good"
+                                ? "text-blue-400"
+                                : getPasswordStrength.text === "Medium"
+                                  ? "text-yellow-400"
+                                  : getPasswordStrength.text === "Weak"
+                                    ? "text-orange-400"
+                                    : "text-red-400"
+                          }`}
                         >
                           {getPasswordStrength.text}
                         </span>

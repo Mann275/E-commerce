@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import "dotenv/config";
 import { welcomeEmailTemplate } from "./EmailTemplet.js";
-export const verifyEmail = (firstName, token, email) => {
+export const verifyEmail = async (firstName, token, email) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -19,11 +19,11 @@ export const verifyEmail = (firstName, token, email) => {
     html: welcomeEmailTemplate(firstName, email, token, clientUrl),
   };
 
-  transporter.sendMail(mailConfiguration, function (err, data) {
-    if (err) {
-      console.log("Error sending email:", err);
-    } else {
-      console.log("Email sent successfully");
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailConfiguration);
+    console.log("Email sent successfully:", info.messageId);
+  } catch (err) {
+    console.log("Error sending email:", err);
+    throw err;
+  }
 };

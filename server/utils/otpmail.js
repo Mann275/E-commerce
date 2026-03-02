@@ -21,11 +21,11 @@ export const otpmail = async (otp, email) => {
     <p>Best regards,<br>Mann Patel</p>`,
   };
 
-  transporter.sendMail(mailConfiguration, function (err, data) {
-    if (err) {
-      console.log("Error sending email:", err);
-    } else {
-      console.log("OTP sent successfully");
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailConfiguration);
+    console.log("OTP sent successfully:", info.messageId);
+  } catch (err) {
+    console.log("Error sending OTP email:", err);
+    throw err;
+  }
 };

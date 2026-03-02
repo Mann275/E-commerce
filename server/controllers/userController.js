@@ -58,7 +58,7 @@ export const register = async (req, res) => {
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "10m",
     });
-    verifyEmail(firstName, token, email); // email will send from here
+    await verifyEmail(firstName, token, email); // email will send from here
     newUser.token = token;
     await newUser.save();
     return res.status(201).json({
@@ -158,7 +158,6 @@ export const reverify = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    console.log("📥 Login Request Body:", req.body);
     const { email, password } = req.body;
 
     if (!email || !password) {

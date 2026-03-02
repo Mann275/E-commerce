@@ -27,8 +27,6 @@ function Navbar() {
   const dropdownRef = useRef(null);
   const notificationRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   // Get user from Redux store
   const { user } = useSelector((store) => store.user);

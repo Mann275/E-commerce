@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
+  const email = location.state?.email;
 
   useEffect(() => {
     if (!location.state?.fromSignup) {
@@ -24,7 +25,9 @@ function Verify() {
         className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-1.5 md:gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-white/20 shadow-lg"
       >
         <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-        <span className="font-medium text-sm md:text-base hidden sm:inline">Back to Signup</span>
+        <span className="font-medium text-sm md:text-base hidden sm:inline">
+          Back to Signup
+        </span>
       </Link>
 
       {/* Logo */}
@@ -50,8 +53,8 @@ function Verify() {
             Check Your Email
           </h2>
           <p className="text-gray-100 drop-shadow mb-6">
-            We've sent a verification link to your email address. Please check
-            your inbox and click the link to verify your account.
+            We've sent a verification link to {email || "your email address"}.
+            Please check your inbox and click the link to verify your account.
           </p>
           <a
             href="https://mail.google.com/"
