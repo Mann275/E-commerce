@@ -50,11 +50,20 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data };
       }
     } catch (error) {
-      console.error("Error during login:", error);
-
+      // Handle different error scenarios
       if (!error.response) {
-        toast.error("Server is not running or unreachable.");
+        // Network error or server not reachable
+        toast.error("Cannot connect to server. Please check your connection.");
+      } else if (error.response.status === 400) {
+        // Bad request - wrong credentials or validation error
+        const errorMessage =
+          error.response?.data?.message || "Invalid email or password";
+        toast.error(errorMessage);
+      } else if (error.response.status === 500) {
+        // Server error
+        toast.error("Server error. Please try again later.");
       } else {
+        // Other errors
         toast.error(
           error.response?.data?.message || "An error occurred during login",
         );
@@ -75,10 +84,16 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data };
       }
     } catch (error) {
-      console.error("Error during signup:", error);
-
+      // Handle different error scenarios
       if (!error.response) {
-        toast.error("Server is not running or unreachable.");
+        toast.error("Cannot connect to server. Please check your connection.");
+      } else if (error.response.status === 400) {
+        // Bad request - validation error or user already exists
+        const errorMessage =
+          error.response?.data?.message || "Registration failed";
+        toast.error(errorMessage);
+      } else if (error.response.status === 500) {
+        toast.error("Server error. Please try again later.");
       } else {
         toast.error(
           error.response?.data?.message || "An error occurred during signup",
@@ -97,7 +112,7 @@ export const AuthProvider = ({ children }) => {
         // Silent fail - proceed with local logout anyway
       });
     } catch (error) {
-      console.error("Error during logout:", error);
+      // Silent error handling - logout locally anyway
     } finally {
       // Always clear local data regardless of API response
       localStorage.removeItem("accesstoken");
@@ -139,7 +154,6 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data };
       }
     } catch (error) {
-      console.error("Error during OTP verification:", error);
       toast.error(error.response?.data?.message || "OTP verification failed");
       return { success: false, error };
     }
@@ -155,7 +169,6 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data };
       }
     } catch (error) {
-      console.error("Error resending OTP:", error);
       toast.error(error.response?.data?.message || "Failed to resend OTP");
       return { success: false, error };
     }
@@ -171,7 +184,6 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data };
       }
     } catch (error) {
-      console.error("Error in forgot password:", error);
       toast.error(error.response?.data?.message || "Failed to send reset link");
       return { success: false, error };
     }
@@ -188,7 +200,6 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data };
       }
     } catch (error) {
-      console.error("Error resetting password:", error);
       toast.error(error.response?.data?.message || "Failed to reset password");
       return { success: false, error };
     }

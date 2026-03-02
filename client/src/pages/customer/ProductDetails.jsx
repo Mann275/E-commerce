@@ -121,7 +121,7 @@ function ProductDetails() {
                     <ChevronRight size={14} />
                     <span className="hover:text-sky-500 transition-colors cursor-pointer">{product.category}</span>
                     <ChevronRight size={14} />
-                    <span className="text-gray-900 dark:text-white font-medium truncate max-w-[200px] sm:max-w-none">{product.productName}</span>
+                    <span className="text-gray-900 dark:text-white font-medium truncate max-w-50 sm:max-w-none">{product.productName}</span>
                 </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -264,7 +264,7 @@ function ProductDetails() {
                                 <span className="relative z-10 flex items-center gap-2 tracking-widest uppercase text-sm">
                                     <ShoppingCart size={20} /> {product?.quantity > 0 ? "Add to Cart" : "Item Unavailable"}
                                 </span>
-                                {product?.quantity > 0 && <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 z-0"></div>}
+                                {product?.quantity > 0 && <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>}
                             </button>
 
                             <button

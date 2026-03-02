@@ -13,7 +13,7 @@ import {
   Package,
   Bell,
 } from "lucide-react";
-import axios from "axios";
+import apiClient from "@/api/axiosInstance";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "@/context/AuthContext";
@@ -90,17 +90,7 @@ function Navbar() {
     const fetchPendingOrders = async () => {
       if (user?.role === "seller") {
         try {
-          const API_URL =
-            import.meta.env.VITE_API_URL || "http://localhost:8000";
-          const token = localStorage.getItem("accesstoken");
-          if (!token) return;
-
-          const res = await axios.get(
-            `${API_URL}/api/v1/orders/seller-orders`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          );
+          const res = await apiClient.get("/orders/seller-orders");
 
           if (res.data.success) {
             const pending = res.data.orders.filter(
@@ -109,7 +99,7 @@ function Navbar() {
             setSellerPendingOrders(pending);
           }
         } catch (err) {
-          console.error("Failed to fetch seller notifications");
+          // Silent fail - notification badge is non-critical
         }
       }
     };
