@@ -1,19 +1,4 @@
-// ============================================================================
-// AXIOS INSTANCE - INDUSTRY STANDARD APPROACH
-// ============================================================================
-// This is an industry standard practice that should ideally be done for ALL
-// API calls across the entire application for consistency and maintainability.
-//
-// BENEFITS:
-// - Centralized API configuration
-// - Automatic token injection in all requests
-// - Consistent error handling
-// - Easy to modify base URL for different environments
-//
-// NOTE: In this project, this axios instance is currently used ONLY for
-// Cart and Wishlist as examples/reminders of best practices. In a production
-// app, all API calls should use a similar configured instance.
-// ============================================================================
+// AXIOS INSTANCE - Centralized configuration for all API calls
 
 import axios from "axios";
 

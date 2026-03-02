@@ -19,9 +19,7 @@ export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ============================================================================
   // LOGIN FUNCTION - Centralized authentication logic using authService
-  // ============================================================================
   const login = async (formData, rememberMe = false) => {
     try {
       const data = await authService.login(formData);
@@ -64,9 +62,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // SIGNUP FUNCTION - Centralized registration logic using authService
-  // ============================================================================
   const signup = async (formData) => {
     try {
       const data = await authService.register(formData);
@@ -91,9 +87,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // LOGOUT FUNCTION - Centralized logout logic
-  // ============================================================================
   const logout = async () => {
     try {
       // Call backend logout API
@@ -116,9 +110,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // DEMO LOGIN FUNCTION - For testing purposes
-  // ============================================================================
   const demoLogin = async (role) => {
     const demoCreds = {
       customer: { email: "customer@example.com", password: "Mann123" },
@@ -131,9 +123,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // VERIFY OTP FUNCTION - Email verification
-  // ============================================================================
   const verifyOTP = async (email, otp) => {
     try {
       const data = await authService.verifyOTP(otp);
@@ -150,9 +140,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // RESEND OTP FUNCTION using authService
-  // ============================================================================
   const resendOTP = async (email) => {
     try {
       const data = await authService.resendOTP();
@@ -168,9 +156,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // FORGOT PASSWORD FUNCTION using authService
-  // ============================================================================
   const forgotPassword = async (email) => {
     try {
       const data = await authService.forgotPassword(email);
@@ -186,9 +172,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ============================================================================
   // RESET PASSWORD FUNCTION using authService
-  // ============================================================================
   const resetPassword = async (token, newPassword) => {
     try {
       const data = await authService.resetPassword(token, newPassword);

@@ -1,9 +1,6 @@
-// ============================================================================
 // WISHLIST SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized wishlist-related API calls
 // Add, remove, get wishlist items
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

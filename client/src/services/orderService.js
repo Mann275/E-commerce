@@ -1,9 +1,6 @@
-// ============================================================================
 // ORDER SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized order-related API calls
 // Create, get, update order status
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

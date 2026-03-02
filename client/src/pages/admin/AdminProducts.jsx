@@ -92,7 +92,7 @@ function AdminProducts() {
                     </div>
                     <div>
                         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                            Global <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-500 italic">Products</span>
+                            Global <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-fuchsia-500 italic">Products</span>
                         </h1>
                         <p className="text-gray-500 dark:text-zinc-400 font-medium tracking-tight">Review and moderate all platform hardware listings.</p>
                     </div>
@@ -140,7 +140,7 @@ function AdminProducts() {
                                                 exit={{ opacity: 0, scale: 0.95 }}
                                                 className={`border-b border-gray-100 dark:border-white/5 hover:bg-white/40 dark:hover:bg-white/5 transition-colors group ${product.status === 'inactive' ? 'opacity-60 grayscale hover:grayscale-0' : ''}`}
                                             >
-                                                <td className="py-4 px-4 min-w-[250px]">
+                                                <td className="py-4 px-4 min-w-62.5">
                                                     <div className="flex gap-4">
                                                         <div className="w-14 h-14 bg-white dark:bg-black rounded-xl overflow-hidden shadow-sm shrink-0 flex items-center justify-center">
                                                             {product.productImg?.[0] ? (
@@ -162,7 +162,7 @@ function AdminProducts() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="py-4 px-4 min-w-[150px]">
+                                                <td className="py-4 px-4 min-w-37.5">
                                                     {product.userId ? (
                                                         <div className="flex items-center gap-2">
                                                             {product.userId.profilePic ? (

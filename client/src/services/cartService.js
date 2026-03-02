@@ -1,9 +1,6 @@
-// ============================================================================
 // CART SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized cart-related API calls
 // Add, remove, update cart items
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

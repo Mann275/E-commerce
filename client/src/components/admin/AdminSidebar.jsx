@@ -17,8 +17,8 @@ const navItems = [
 
 function AdminSidebar() {
     return (
-        <aside className="fixed bottom-0 left-0 w-full md:w-16 lg:w-20 md:left-4 md:top-24 md:bottom-6 z-[60] flex md:flex-col">
-            <div className="w-full md:flex-1 bg-white dark:bg-zinc-950 border-t md:border border-gray-200 dark:border-white/10 md:rounded-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-2xl flex flex-row md:flex-col py-3 md:py-8 px-4 md:px-0 items-center justify-around md:justify-start gap-2 md:gap-6">
+        <aside className="fixed bottom-0 left-0 w-full md:w-16 lg:w-20 md:left-4 md:top-24 md:bottom-6 z-60 flex md:flex-col">
+            <div className="w-full md:flex-1 bg-white dark:bg-zinc-950 border-t md:border border-gray-200 dark:border-white/10 md:rounded-4xl shadow-[0_-10px_40px_rgba(0,0,0,0.05)] md:shadow-2xl flex flex-row md:flex-col py-3 md:py-8 px-4 md:px-0 items-center justify-around md:justify-start gap-2 md:gap-6">
                 <nav className="flex flex-row md:flex-col gap-2 md:gap-4 w-full md:px-2 justify-around md:justify-start">
                     {navItems.map((item) => (
                         <NavLink

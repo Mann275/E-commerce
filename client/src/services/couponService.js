@@ -1,9 +1,6 @@
-// ============================================================================
 // COUPON SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized coupon-related API calls
 // Validate, apply coupons
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

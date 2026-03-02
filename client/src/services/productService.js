@@ -1,9 +1,6 @@
-// ============================================================================
 // PRODUCT SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized product-related API calls
 // CRUD operations, filtering, searching
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

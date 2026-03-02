@@ -1,9 +1,6 @@
-// ============================================================================
 // USER SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized user-related API calls
 // Profile management, user data operations
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

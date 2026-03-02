@@ -1,9 +1,6 @@
-// ============================================================================
 // ADMIN SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized admin-related API calls
 // User management, analytics, system operations
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 

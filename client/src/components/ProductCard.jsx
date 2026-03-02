@@ -101,7 +101,7 @@ function ProductCard({ product }) {
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
         <div className="text-xs font-semibold text-sky-500 mb-1 tracking-wider uppercase">{category}</div>
-        <Link to={`/product/${_id}`} className="block mb-2 min-h-[48px]">
+        <Link to={`/product/${_id}`} className="block mb-2 min-h-12">
           <h3 className="font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-sky-500 transition-colors leading-tight">
             {productName}
           </h3>

@@ -2,7 +2,7 @@ import React from "react";
 
 const PageLoader = () => {
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/30 dark:bg-black/30 backdrop-blur-2xl transition-colors duration-300">
+        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/30 dark:bg-black/30 backdrop-blur-2xl transition-colors duration-300">
             {/* Background Accent Gradients */}
             <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_0%,rgba(14,165,233,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_0%,rgba(14,165,233,0.1),transparent_50%)]"></div>
             <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_100%,rgba(139,92,246,0.1),transparent_50%)]"></div>

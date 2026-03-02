@@ -61,7 +61,7 @@ function AdminDashboard() {
                 className="flex flex-col gap-2 mb-10 relative z-10"
             >
                 <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                    Platform <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-500 italic">Overview</span>
+                    Platform <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-fuchsia-500 italic">Overview</span>
                 </h1>
                 <p className="text-gray-500 dark:text-zinc-400 font-medium tracking-tight">Monitor platform health, users, and overall operations.</p>
             </motion.div>

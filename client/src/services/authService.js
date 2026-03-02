@@ -1,9 +1,6 @@
-// ============================================================================
 // AUTH SERVICE - Industry Standard API Layer
-// ============================================================================
 // Centralized authentication API calls
 // All authentication-related requests go through this service
-// ============================================================================
 
 import apiClient from "../api/axiosInstance";
 
