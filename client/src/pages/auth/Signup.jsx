@@ -14,6 +14,7 @@ import { Eye, EyeOff, Loader, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import ServerWakeup from "@/components/ServerWakeup";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -93,6 +94,7 @@ const Signup = () => {
 
   return (
     <div className="relative flex justify-center items-center min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+      <ServerWakeup />
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.1),transparent_50%)] animate-pulse"></div>
       <div className="absolute inset-0 bg-[linear-gradient(rgba(168,85,247,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.05)_1px,transparent_1px)] bg-size-[50px_50px]"></div>
