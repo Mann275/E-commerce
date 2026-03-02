@@ -284,7 +284,7 @@ function AdminUsers() {
                                 ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20"
                                 : user.role === "seller"
                                   ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
-                                  : "bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20"
+                                  : "bg-gray-100 dark:bg-white/10 text-blue-600 dark:text-blue-600 hover:bg-gray-200 dark:hover:bg-white/20"
                             }`}
                           >
                             <option
