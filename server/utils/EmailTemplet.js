@@ -1,4 +1,4 @@
-export const welcomeEmailTemplate = (firstName, email, token) => `
+export const welcomeEmailTemplate = (firstName, email, token, clientUrl) => `
 <!doctype html>
 <html>
   <head>
@@ -310,7 +310,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                   <tr>
                     <td align="center">
                       <a
-                        href="http://localhost:5173/verify/${token}"
+                        href="${clientUrl}/verify/${token}"
                         class="verify-button"
                         style="
                           display: inline-block;

@@ -10,12 +10,13 @@ export const verifyEmail = (firstName, token, email) => {
     },
   });
 
+  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
   const mailConfiguration = {
     from: process.env.MAIL_USER,
     to: email,
     subject: "Email Verification ✅",
-    // text: `🙏Please verify your email by clicking on the following link: http://localhost:5173/verify/${token}`,
-    html: welcomeEmailTemplate(firstName, email, token),
+    html: welcomeEmailTemplate(firstName, email, token, clientUrl),
   };
 
   transporter.sendMail(mailConfiguration, function (err, data) {
