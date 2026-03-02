@@ -1,17 +1,17 @@
 <div align="center">
 
-# 🖥️ E-Commerce Platform
+# 🖥️ OverClocked - E-Commerce Platform
 
 ### Full-Stack Multi-Role Computer Hardware Shopping Application
 
 ![PC Hardware Banner](https://images.unsplash.com/photo-1587202372775-e229f172b9d7?q=99&w=1200&h=400&auto=format&fit=crop)
 
-[![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-6.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Express](https://img.shields.io/badge/Express-5.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-9.x-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-**A specialized e-commerce platform for PC components and hardware, built with the MERN stack. Shop for GPUs, CPUs, RAM, SSDs, cooling solutions, and more with secure authentication and role-based access.**
+**OverClocked is a specialized e-commerce platform for PC components and hardware, built with the MERN stack. Shop for GPUs, CPUs, RAM, SSDs, cooling solutions, and more with secure authentication, role-based access, and seamless payment integration through Razorpay.**
 
 </div>
 
@@ -23,15 +23,8 @@
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
-- [📚 Architecture Documentation](#-architecture-documentation)
 - [Getting Started](#-getting-started)
 - [Installation](#-installation)
-- [Environment Variables](#-environment-variables)
-- [API Documentation](#-api-documentation)
-- [Screenshots](#-screenshots)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [License](#-license)
 - [Contact](#-contact)
 
 ---
@@ -77,8 +70,8 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 - 💳 **Seamless Checkout** - Multiple payment options (COD, online payments)
 - 📦 **Order Tracking** - Complete order history with real-time status updates
 - 🔎 **Advanced Filters** - Search by price, brand, specs (RAM capacity, GPU VRAM, CPU cores, etc.)
-- 🔧 **Compatibility Checker** - Verify component compatibility _(coming soon)_
-- ⭐ **Product Reviews** - Rate and review PC components _(coming soon)_
+- � **Wishlist** - Save favorite components for later
+- 🎫 **Coupon System** - Apply discount codes at checkout
 
 ### 🏪 Seller Features
 
@@ -88,28 +81,35 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 - 📋 **Order Management** - View and manage customer hardware orders
 - 🚚 **Order Fulfillment** - Update order status (Placed → Shipped → Delivered)
 - 📈 **Sales Reports** - Track best-selling components and revenue
-- 📸 **Product Images** - Upload multiple images of hardware products
+- 📸 **Product Images** - Upload and crop images with Cloudinary integration
 - 📊 **Inventory Control** - Real-time stock management for components
 - 🔧 **Tech Specs Input** - Add detailed specifications (cores, clock speed, capacity, etc.)
+- 📈 **Analytics Dashboard** - View sales trends and revenue insights
+- 🔄 **Product Status** - Toggle product visibility (active/inactive)
 
 ### 🛡️ Admin Features
 
 - 🎛️ **Admin Dashboard** - Comprehensive platform analytics and KPIs
 - 👥 **User Management** - View, block, or remove users
 - ✅ **Seller Approval** - Review and approve hardware vendor registrations
-- 🗂️ **Component Categories** - Manage PC component categories and brands (Intel, AMD, NVIDIA, Corsair, etc.)
+- 🗂️ **Component Categories** - Manage PC component categories and brands
 - 🔍 **Product Oversight** - Verify specifications and manage all hardware listings
 - 📦 **Order Monitoring** - Track all hardware orders across the platform
+- 🔒 **User Control** - Ban/unban users, manage seller approvals
 - 📊 **Platform Analytics** - Sales trends by component type, popular products, revenue reports
-- 🚨 **Content Moderation** - Review reports and manage disputes
 
 ### 📦 Additional Features
 
-- 📧 **Email Notifications** - Account creation, order confirmation, and updates
-- 🔒 **Secure APIs** - Protected routes with role-based middleware
-- 📱 **Responsive Design** - Optimized for desktop, tablet, and mobile devices
-- 🌐 **RESTful Architecture** - Clean, documented API endpoints
-- ⚡ **Performance Optimized** - Fast loading times and efficient queries
+- 📧 **Email Notifications** - Nodemailer integration for account verification and order updates
+- 🔒 **Secure APIs** - JWT authentication with protected routes and role-based middleware
+- 📱 **Responsive Design** - Mobile-first design optimized for all devices
+- 🌐 **RESTful Architecture** - Clean, documented API endpoints following REST principles
+- ⚡ **Performance Optimized** - Vite for lightning-fast builds, optimized MongoDB queries
+- 💳 **Payment Gateway** - Razorpay integration for secure online payments
+- ☁️ **Cloud Storage** - Cloudinary for image storage and CDN delivery
+- 🎨 **Modern UI/UX** - shadcn/ui components with Framer Motion animations
+- 🔄 **Real-time Updates** - Instant cart and wishlist synchronization
+- 🛡️ **Security** - Password hashing with bcrypt, CORS configuration, environment variables
 
 ---
 
@@ -122,11 +122,13 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
-![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
-![Redux](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7.x-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-1.13-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-2.11-593D88?style=for-the-badge&logo=redux&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.x-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-Latest-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
+![Lucide](https://img.shields.io/badge/Lucide_Icons-0.575-F56565?style=for-the-badge&logo=lucide&logoColor=white)
 
 </div>
 
@@ -137,10 +139,13 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![Mongoose](https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
-![Bcrypt](https://img.shields.io/badge/Bcrypt-3178C6?style=for-the-badge&logo=letsencrypt&logoColor=white)
-![Nodemailer](https://img.shields.io/badge/Nodemailer-0078D4?style=for-the-badge&logo=gmail&logoColor=white)
+![Mongoose](https://img.shields.io/badge/Mongoose-9.x-880000?style=for-the-badge&logo=mongoose&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-9.x-black?style=for-the-badge&logo=JSON%20web%20tokens)
+![Bcrypt](https://img.shields.io/badge/Bcrypt-3.x-3178C6?style=for-the-badge&logo=letsencrypt&logoColor=white)
+![Nodemailer](https://img.shields.io/badge/Nodemailer-8.x-0078D4?style=for-the-badge&logo=gmail&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-2.x-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
+![Razorpay](https://img.shields.io/badge/Razorpay-2.x-0C2451?style=for-the-badge&logo=razorpay&logoColor=white)
+![Multer](https://img.shields.io/badge/Multer-2.x-FF6600?style=for-the-badge&logoColor=white)
 
 </div>
 
@@ -153,81 +158,252 @@ This **PC Components E-Commerce Platform** is a specialized online marketplace f
 ![VS Code](https://img.shields.io/badge/VS_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
 </div>
 
 ---
 
-## 📚 Architecture Documentation
-
-This project follows **industry-standard architecture** with complete separation of concerns. Detailed documentation available:
-
-### 📖 Complete Documentation Suite
-
-| Document                  | Description                                                                                      | Link                                   |
-| ------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------- |
-| 🔄 **DATA_FLOW_GUIDE.md** | **Complete data flow with diagrams** <br/>Login flow, Cart flow, Order flow, Authentication flow | [View Guide](./DATA_FLOW_GUIDE.md)     |
-| 🏗️ **ARCHITECTURE.md**    | **Industry-standard architecture explanation** <br/>Services, Redux, Context API, Best practices | [View Architecture](./ARCHITECTURE.md) |
-| 🚀 **QUICK_START.md**     | **Ready-to-use code examples** <br/>Common tasks, Usage patterns, Decision tree                  | [View Quick Start](./QUICK_START.md)   |
-| 🔄 **MIGRATION_GUIDE.md** | **Migrate old code to new architecture** <br/>Before/After examples, Step-by-step process        | [View Migration](./MIGRATION_GUIDE.md) |
-
-### 🎯 Quick Navigation
-
-**Need to understand:**
-
-- **How data flows?** → Read [DATA_FLOW_GUIDE.md](./DATA_FLOW_GUIDE.md) - Complete visual diagrams
-- **Architecture theory?** → Read [ARCHITECTURE.md](./ARCHITECTURE.md) - Layer-by-layer explanation
-- **Quick examples?** → Read [QUICK_START.md](./QUICK_START.md) - Copy-paste ready code
-- **Migrate old code?** → Read [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) - Before/After patterns
-
-### 🏛️ Architecture Overview
+## 🏗️ System Architecture
 
 ```
-Frontend (React)
-├── Pages/Components (UI Layer)
-│   └── User interactions
-├── Context API (Auth state)
-│   └── login, logout, signup
-├── Redux Store (Global state)
-│   └── cart, wishlist, user, products
-├── Services Layer (API calls)
-│   ├── authService
-│   ├── productService
-│   ├── cartService
-│   ├── orderService
-│   └── adminService
-└── Axios Instance
-    └── Token management, interceptors
+Frontend (React 19 + Vite)
+├── 📱 Pages/Components (UI Layer)
+│   ├── Customer Pages (Home, Products, Cart, Checkout, Orders)
+│   ├── Seller Pages (Dashboard, Inventory, Orders, Analytics)
+│   ├── Admin Pages (Dashboard, Users, Products, Orders)
+│   └── Auth Pages (Login, Signup, Verify Email, Forgot Password)
+│
+├── 🔐 Context API (Authentication)
+│   ├── User session management
+│   ├── Login/Logout state
+│   └── Token refresh handling
+│
+├── 🗂️ Redux Toolkit (Global State)
+│   ├── cartSlice - Shopping cart management
+│   ├── wishlistSlice - Wishlist operations
+│   ├── userSlice - User data & preferences
+│   └── productSlice - Product catalog
+│
+├── 🔌 Services Layer (API Communication)
+│   ├── authService - Authentication & authorization
+│   ├── productService - Product CRUD operations
+│   ├── cartService - Cart management
+│   ├── wishlistService - Wishlist operations
+│   ├── orderService - Order processing
+│   ├── couponService - Discount coupons
+│   ├── adminService - Admin operations
+│   └── userService - User profile management
+│
+├── 🎨 UI Components
+│   ├── shadcn/ui components (Button, Card, Input, Label)
+│   ├── Custom components (Navbar, Footer, Product Cards)
+│   ├── Route Guards (Protected routes)
+│   └── Auth Interceptor (Auto token refresh)
+│
+└── 🔧 Utilities
+    ├── Axios Instance (API client with interceptors)
+    ├── Image Cropper (react-easy-crop)
+    └── Tailwind utilities
 
-Backend (Node.js + Express)
-├── Routes (API endpoints)
-├── Middleware (Authentication)
-├── Controllers (Business logic)
-├── Models (MongoDB schemas)
-└── Database (MongoDB)
+Backend (Node.js + Express 5)
+├── 🛣️ API Routes
+│   ├── /api/v1/users - User authentication & profile
+│   ├── /api/v1/products - Product management
+│   ├── /api/v1/cart - Shopping cart operations
+│   ├── /api/v1/wishlist - Wishlist management
+│   ├── /api/v1/orders - Order processing & tracking
+│   ├── /api/v1/coupons - Coupon management
+│   └── /api/v1/admin - Admin operations
+│
+├── 🔒 Middleware
+│   ├── isAuthenticated - JWT verification
+│   ├── Role-based access control
+│   ├── Multer - File upload handling
+│   └── CORS configuration
+│
+├── 🎮 Controllers
+│   ├── userController - User logic
+│   ├── productController - Product logic
+│   ├── cartController - Cart operations
+│   ├── wishlistController - Wishlist logic
+│   ├── orderController - Order management
+│   ├── couponController - Coupon validation
+│   └── adminController - Admin operations
+│
+├── 📊 Models (MongoDB + Mongoose)
+│   ├── User - User accounts (Customer, Seller, Admin)
+│   ├── Product - Product catalog
+│   ├── Cart - Shopping carts
+│   ├── Wishlist - User wishlists
+│   ├── Order - Order records
+│   ├── Coupon - Discount coupons
+│   └── Session - User sessions
+│
+└── 🔧 Utilities
+    ├── Cloudinary - Image storage & CDN
+    ├── Nodemailer - Email notifications
+    ├── Razorpay - Payment gateway integration
+    ├── JWT - Token generation & verification
+    └── Bcrypt - Password hashing
 ```
 
-### ✨ Key Features
 
-✅ **Services Layer** - All API calls centralized  
-✅ **Redux Slices** - State management with async thunks  
-✅ **Context API** - Authentication state  
-✅ **Auto Token Refresh** - Seamless user experience  
-✅ **Optimistic Updates** - Instant UI feedback  
-✅ **Error Handling** - Consistent across layers
+## � Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher) - [Download](https://nodejs.org/)
+- **npm** or **yarn** - Comes with Node.js
+- **MongoDB** - [Download](https://www.mongodb.com/try/download/community) or use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- **Git** - [Download](https://git-scm.com/)
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/Mann275/E-commerce.git
+cd E-commerce
+
+# Install dependencies for both client and server
+cd server
+npm install
+
+cd ../client
+npm install
+```
 
 ---
 
-## 📞 Contact
+## 📦 Installation
 
-### Project Maintainer
+### 1. Clone the Repository
 
-**Your Name**
+```bash
+git clone https://github.com/Mann275/E-commerce.git
+cd E-commerce
+```
 
-- 📧 Email: your.email@example.com
-- 🐙 GitHub: [@mann275](https://github.com/Mann275)
+### 2. Server Setup
+
+```bash
+# Navigate to server directory
+cd server
+
+# Install dependencies
+npm install
+
+# Create .env file (see Environment Variables section)
+# Add your configuration
+
+# Start development server
+npm run dev
+```
+
+The backend server will start on `http://localhost:8000`
+
+### 3. Client Setup
+
+```bash
+# Navigate to client directory (from root)
+cd client
+
+# Install dependencies
+npm install
+
+# Create .env file (see Environment Variables section)
+# Add your configuration
+
+# Start development server
+npm run dev
+```
+
+The frontend will start on `http://localhost:5173`
+
+### 4. Access the Application
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **MongoDB**: Your configured MongoDB URI
+
+---
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+### How to Contribute
+
+1. **Fork the Project**
+
+   ```bash
+   # Click the 'Fork' button at the top right of this page
+   ```
+
+2. **Clone your Fork**
+
+   ```bash
+   git clone https://github.com/your-username/E-commerce.git
+   cd E-commerce
+   ```
+
+3. **Create a Feature Branch**
+
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+
+4. **Make your Changes**
+   - Write clean, commented code
+   - Follow the existing code style
+   - Test your changes thoroughly
+
+5. **Commit your Changes**
+
+   ```bash
+   git add .
+   git commit -m "Add some AmazingFeature"
+   ```
+
+6. **Push to your Fork**
+
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+
+7. **Open a Pull Request**
+   - Go to the original repository
+   - Click "New Pull Request"
+   - Describe your changes in detail
+
+### Contribution Guidelines
+
+- 📝 Write clear commit messages
+- 🧪 Test your code before submitting
+- 📚 Update documentation if needed
+- 🎨 Follow the existing code style
+- 🐛 Report bugs with detailed information
+- 💡 Suggest features with clear use cases
+
+---
+
+##�📞 Contact
+
+
+**Mann Patel**
+
+- 🐙 GitHub: [@Mann275](https://github.com/Mann275)
 - 💼 LinkedIn: [mann27](https://www.linkedin.com/in/mann27/)
-- 🐦 portfolio: [PatelMann](https://patelmann.me)
+- 🌐 Portfolio: [patelmann.me](https://patelmann.me)
+- 📧 Email:  patelmann2705@gmail.com
+
+### Project Links
+
+- 🔗 **Live Demo**: [over-clocked.vercel.app](https://over-clocked.vercel.app/)
+- 📦 **Repository**: [github.com/Mann275/E-commerce](https://github.com/Mann275/E-commerce)
+- 🐛 **Issues**: [Report a bug](https://github.com/Mann275/E-commerce/issues)
 
 ---
 

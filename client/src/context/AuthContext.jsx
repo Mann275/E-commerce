@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { setUser } from "../redux/userSlice";
+import { clearCart } from "../redux/cartSlice";
+import { clearWishlist } from "../redux/wishlistSlice";
 import { authService } from "../services";
 
 const AuthContext = createContext(null);
@@ -90,23 +92,26 @@ export const AuthProvider = ({ children }) => {
   // LOGOUT FUNCTION - Centralized logout logic
   const logout = async () => {
     try {
-      // Call backend logout API
+      // Call backend logout API (ignore errors)
       await authService.logout().catch(() => {
         // Silent fail - proceed with local logout anyway
       });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      // Always clear local data regardless of API response
+      localStorage.removeItem("accesstoken");
+      localStorage.removeItem("refreshtoken");
+      localStorage.removeItem("user");
+
       // Clear Redux state
       dispatch(setUser(null));
+      dispatch(clearCart());
+      dispatch(clearWishlist());
 
       // Redirect to login
       navigate("/login");
       toast.success("Logged out successfully");
-    } catch (error) {
-      console.error("Error during logout:", error);
-
-      // Force logout even if API call fails
-      localStorage.clear();
-      dispatch(setUser(null));
-      navigate("/login");
     }
   };
 

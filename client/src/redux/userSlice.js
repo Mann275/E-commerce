@@ -1,4 +1,3 @@
-
 import { createSlice } from "@reduxjs/toolkit";
 
 const getUserFromLocalStorage = () => {
@@ -32,6 +31,10 @@ const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      // Clear localStorage when logging out via Redux
+      localStorage.removeItem("accesstoken");
+      localStorage.removeItem("refreshtoken");
+      localStorage.removeItem("user");
     },
   },
 });

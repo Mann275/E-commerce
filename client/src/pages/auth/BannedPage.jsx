@@ -9,15 +9,17 @@ import {
   Check,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { logout, setUser } from "../../redux/userSlice";
+import { setUser } from "../../redux/userSlice";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../../api/axiosInstance";
 import { toast } from "sonner";
 
 function BannedPage() {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { logout: handleLogout } = useAuth();
   const [copied, setCopied] = useState(false);
   const adminEmail = "admin@overclocked.com";
 
@@ -28,34 +30,10 @@ function BannedPage() {
     setTimeout(() => setCopied(false), 2000);
   }, [adminEmail]);
 
-  const handleLogout = useCallback(async () => {
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-      await axios.post(
-        `${API_URL}/api/v1/users/logout`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      dispatch(logout());
-      localStorage.removeItem("accesstoken");
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout error", error);
-      // Force logout client-side anyway
-      dispatch(logout());
-      localStorage.removeItem("accesstoken");
-      navigate("/login");
-    }
-  }, [dispatch, navigate]);
-
   // Check if user is still banned by fetching fresh data from server
   useEffect(() => {
     const checkBanStatus = async () => {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
         const token = localStorage.getItem("accesstoken");
 
         if (!token) {
@@ -63,9 +41,7 @@ function BannedPage() {
           return;
         }
 
-        const res = await axios.get(`${API_URL}/api/v1/users/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await apiClient.get("/users/me");
 
         if (res.data.success) {
           const latestUser = res.data.user;
