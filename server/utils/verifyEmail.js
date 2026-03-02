@@ -3,7 +3,10 @@ import "dotenv/config";
 import { welcomeEmailTemplate } from "./EmailTemplet.js";
 export const verifyEmail = async (firstName, token, email) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    family: 4, // Force IPv4 — Render doesn't support IPv6
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,

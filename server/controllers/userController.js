@@ -153,7 +153,6 @@ export const reverify = async (req, res) => {
     await user.save();
     return res.status(200).json({
       success: true,
-      message: "Verification email sent again successfully",
       token: user.token,
     });
   } catch (error) {
