@@ -107,7 +107,7 @@ function MyOrders() {
 
                             <div className="flex flex-col sm:flex-row gap-4 w-full">
                                 {/* Total Orders Card */}
-                                <div className="bg-white dark:bg-[#151515] rounded-[1.25rem] p-5 w-full sm:w-[240px] border border-gray-200 dark:border-white/5 shadow-sm">
+                                <div className="bg-white dark:bg-[#151515] rounded-[1.25rem] p-5 w-full sm:w-60 border border-gray-200 dark:border-white/5 shadow-sm">
                                     <div className="w-12 h-12 rounded-xl bg-[#ea580c] text-white flex items-center justify-center mb-6 shadow-lg shadow-orange-500/20">
                                         <Package size={24} />
                                     </div>
@@ -120,7 +120,7 @@ function MyOrders() {
                                 </div>
 
                                 {/* Cart Items Card */}
-                                <div className="bg-white dark:bg-[#151515] rounded-[1.25rem] p-5 w-full sm:w-[240px] border border-gray-200 dark:border-white/5 shadow-sm">
+                                <div className="bg-white dark:bg-[#151515] rounded-[1.25rem] p-5 w-full sm:w-60 border border-gray-200 dark:border-white/5 shadow-sm">
                                     <div className="w-12 h-12 rounded-xl bg-[#3b82f6] text-white flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20">
                                         <ShoppingBag size={24} />
                                     </div>
@@ -173,7 +173,7 @@ function MyOrders() {
                         <Package size={64} className="text-sky-500/50 mx-auto mb-6 drop-shadow-lg" />
                         <h3 className="text-2xl font-bold dark:text-white mb-3">No orders found</h3>
                         <p className="text-gray-500 dark:text-zinc-400 mb-8 text-lg">You haven't placed any hardware orders yet.</p>
-                        <Link to="/products" className="bg-gradient-to-r from-sky-500 to-indigo-500 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all inline-block shadow-lg">Start Shopping</Link>
+                        <Link to="/products" className="bg-linear-to-r from-sky-500 to-indigo-500 text-white px-8 py-4 rounded-xl font-bold hover:scale-105 hover:shadow-[0_0_20px_rgba(14,165,233,0.4)] transition-all inline-block shadow-lg">Start Shopping</Link>
                     </motion.div>
                 ) : (
                     <div className="space-y-6">
@@ -210,7 +210,7 @@ function MyOrders() {
                                                 </div>
                                                 <div>
                                                     <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1">Total Amount</div>
-                                                    <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500 italic shadow-sm">₹{order.totalAmount.toLocaleString()}</div>
+                                                    <div className="text-xl font-black text-transparent bg-clip-text bg-linear-to-r from-sky-400 to-indigo-500 italic shadow-sm">₹{order.totalAmount.toLocaleString()}</div>
                                                 </div>
                                                 <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${config.bg} ${config.color}`}>
                                                     {config.label}
@@ -235,11 +235,11 @@ function MyOrders() {
                                                         </div>
                                                     ))}
                                                     {/* Progress Line */}
-                                                    <div className="absolute top-[11px] left-0 w-full h-0.5 bg-gray-100 dark:bg-zinc-800 -z-0" />
+                                                    <div className="absolute top-2.75 left-0 w-full h-0.5 bg-gray-100 dark:bg-zinc-800 z-0" />
                                                     <motion.div
                                                         initial={{ width: 0 }}
                                                         animate={{ width: `${(stepIdx / (steps.length - 1)) * 100}%` }}
-                                                        className="absolute top-[11px] left-0 h-0.5 bg-sky-500 -z-0 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
+                                                        className="absolute top-2.75 left-0 h-0.5 bg-sky-500 z-0 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
                                                     />
                                                 </div>
                                             </div>
