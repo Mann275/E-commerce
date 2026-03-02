@@ -58,9 +58,14 @@ export const register = async (req, res) => {
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "10m",
     });
-    await verifyEmail(firstName, token, email); // email will send from here
     newUser.token = token;
     await newUser.save();
+
+    // Send verification email — non-blocking, don't fail registration if email fails
+    verifyEmail(firstName, token, email).catch((err) => {
+      console.error("Verification email failed to send:", err.message);
+    });
+
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
