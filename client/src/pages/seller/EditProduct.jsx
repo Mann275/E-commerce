@@ -131,6 +131,24 @@ function EditProduct() {
 
     setLoading(true);
     try {
+      const data = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        if (key === "imageUrls") {
+          formData.imageUrls.forEach((url) => data.append("imageUrls", url));
+        } else {
+          data.append(key, formData[key]);
+        }
+      });
+
+      // Append public_ids of images to keep
+      existingImages.forEach((img) =>
+        data.append("existingImages", img.public_id),
+      );
+
+      // Append new files
+      images.forEach((img) => data.append("productImg", img.file));
+
       const res = await apiClient.put(`/products/update/${productId}`, data);
 
       if (res.data.success) {
@@ -453,7 +471,7 @@ function EditProduct() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-[2] py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-xl transition-all flex items-center justify-center gap-3
+                className={`flex-2 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-xl transition-all flex items-center justify-center gap-3
                                     ${
                                       loading
                                         ? "bg-gray-100 dark:bg-zinc-800 text-gray-500 cursor-not-allowed"

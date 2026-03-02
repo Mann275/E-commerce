@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Star,
@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Send,
   User,
+  PackageX,
 } from "lucide-react";
 import apiClient from "../../api/axiosInstance";
 import { useSelector, useDispatch } from "react-redux";
@@ -32,9 +33,12 @@ import PageLoader from "../../components/PageLoader";
 function ProductDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { singleProduct: product, loading } = useSelector(
-    (state) => state.product,
-  );
+  const navigate = useNavigate();
+  const {
+    singleProduct: product,
+    loading,
+    error,
+  } = useSelector((state) => state.product);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { wishlistItems } = useSelector((state) => state.wishlist);
 
@@ -48,11 +52,14 @@ function ProductDetails() {
 
   useEffect(() => {
     const fetchProduct = async () => {
+      dispatch(setSingleProduct(null)); // clear old product before fetching
       dispatch(setLoading(true));
       try {
         const res = await apiClient.get(`/products/get/${id}`);
         if (res.data.success) {
           dispatch(setSingleProduct(res.data.product));
+        } else {
+          dispatch(setError("Product not found"));
         }
       } catch (error) {
         console.error(error);
@@ -90,8 +97,28 @@ function ProductDetails() {
     }
   };
 
-  if (loading || !product) {
+  if (loading) {
     return <PageLoader />;
+  }
+
+  if (!product) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white gap-6 px-4">
+        <PackageX className="w-20 h-20 text-red-400 opacity-70" />
+        <h1 className="text-3xl font-black uppercase tracking-tighter">
+          Product Not Found
+        </h1>
+        <p className="text-gray-400 text-center max-w-md">
+          This product may have been removed or the link is invalid.
+        </p>
+        <button
+          onClick={() => navigate("/products")}
+          className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl transition-colors"
+        >
+          Browse Products
+        </button>
+      </div>
+    );
   }
 
   const discountPercentage = product.discountPercentage || 0;
