@@ -1,16 +1,56 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import apiClient from "../../api/axiosInstance";
 
 function Verify() {
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
 
+  const [countdown, setCountdown] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const [resending, setResending] = useState(false);
+  const timerRef = useRef(null);
+
+  const startCountdown = () => {
+    setCanResend(false);
+    setCountdown(60);
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleResend = async () => {
+    if (!canResend || resending) return;
+    try {
+      setResending(true);
+      await apiClient.post("/users/reverify", { email });
+      toast.success("Verification email sent!");
+      startCountdown();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to resend email");
+    } finally {
+      setResending(false);
+    }
+  };
+
   useEffect(() => {
     if (!location.state?.fromSignup) {
       navigate("/signup", { replace: true });
+    } else {
+      startCountdown();
     }
+    return () => clearInterval(timerRef.current);
   }, [location, navigate]);
 
   return (
@@ -64,6 +104,23 @@ function Verify() {
           >
             Go to Email
           </a>
+
+          <div className="mt-5">
+            {canResend ? (
+              <button
+                onClick={handleResend}
+                disabled={resending}
+                className="text-sm text-sky-400 hover:text-sky-300 underline underline-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {resending ? "Sending..." : "Resend verification email"}
+              </button>
+            ) : (
+              <p className="text-sm text-gray-400">
+                Resend email in{" "}
+                <span className="text-sky-400 font-semibold">{countdown}s</span>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
