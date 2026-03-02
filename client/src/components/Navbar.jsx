@@ -11,12 +11,12 @@ import {
   Heart,
   MessageCircle,
   Package,
-  Bell
+  Bell,
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/redux/userSlice";
+import { useAuth } from "@/context/AuthContext";
 
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,7 +41,10 @@ function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setNotificationOpen(false);
       }
     };
@@ -85,18 +88,24 @@ function Navbar() {
   // Fetch pending orders for seller notification badge
   useEffect(() => {
     const fetchPendingOrders = async () => {
-      if (user?.role === 'seller') {
+      if (user?.role === "seller") {
         try {
-          const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+          const API_URL =
+            import.meta.env.VITE_API_URL || "http://localhost:8000";
           const token = localStorage.getItem("accesstoken");
           if (!token) return;
 
-          const res = await axios.get(`${API_URL}/api/v1/orders/seller-orders`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const res = await axios.get(
+            `${API_URL}/api/v1/orders/seller-orders`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
 
           if (res.data.success) {
-            const pending = res.data.orders.filter(o => o.orderStatus === 'Pending').length;
+            const pending = res.data.orders.filter(
+              (o) => o.orderStatus === "Pending",
+            ).length;
             setSellerPendingOrders(pending);
           }
         } catch (err) {
@@ -108,51 +117,22 @@ function Navbar() {
 
     // Set up polling every 30 seconds for live updates
     let intervalId;
-    if (user?.role === 'seller') {
+    if (user?.role === "seller") {
       intervalId = setInterval(fetchPendingOrders, 30000);
     }
     return () => clearInterval(intervalId);
   }, [user]);
 
-  // Logout function
-  const accessToken = localStorage.getItem("accesstoken");
-  const handleLogout = async () => {
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/logout`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      if (res.data.success) {
-        toast.success("Logged out successfully");
-        localStorage.removeItem("accesstoken");
-        localStorage.removeItem("refreshtoken");
-        localStorage.removeItem("user");
-        dispatch(logout());
-        navigate("/");
-      }
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Still logout on frontend even if API fails
-      localStorage.removeItem("accesstoken");
-      localStorage.removeItem("refreshtoken");
-      localStorage.removeItem("user");
-      dispatch(logout());
-      navigate("/");
-    }
-  };
+  // ✅ Use centralized logout from AuthContext
+  const { logout: handleLogout } = useAuth();
 
   return (
     <header
-      className={`fixed w-full z-50 transition-all duration-300 ${scrolled
-        ? "bg-black/40 dark:bg-black/60 backdrop-blur-3xl border-b border-blue-400 dark:border-white/10 shadow-sm py-2"
-        : "bg-transparent py-2"
-        }`}
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-black/40 dark:bg-black/60 backdrop-blur-3xl border-b border-blue-400 dark:border-white/10 shadow-sm py-2"
+          : "bg-transparent py-2"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-12 md:h-14 gap-2">
@@ -196,7 +176,6 @@ function Navbar() {
                   >
                     Dashboard
                   </NavLink>
-
                 </div>
               )}
               {user?.role === "admin" && (
@@ -231,8 +210,12 @@ function Navbar() {
                 {notificationOpen && (
                   <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white dark:bg-[#1A1A1A] border border-blue-400 dark:border-neutral-800 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in duration-200 overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-neutral-800 flex justify-between items-center">
-                      <span className="text-sm font-bold text-gray-900 dark:text-white">Notifications</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-500 bg-sky-500/10 px-2 py-1 rounded-md">{sellerPendingOrders} New</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">
+                        Notifications
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-sky-500 bg-sky-500/10 px-2 py-1 rounded-md">
+                        {sellerPendingOrders} New
+                      </span>
                     </div>
                     <div className="max-h-64 overflow-y-auto no-scrollbar">
                       {sellerPendingOrders > 0 ? (
@@ -246,8 +229,14 @@ function Navbar() {
                               <Package size={16} />
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">You have {sellerPendingOrders} pending order{sellerPendingOrders > 1 ? 's' : ''} waiting for your acceptance or rejection.</p>
-                              <p className="text-xs text-sky-500 font-bold mt-1">Click to view orders</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
+                                You have {sellerPendingOrders} pending order
+                                {sellerPendingOrders > 1 ? "s" : ""} waiting for
+                                your acceptance or rejection.
+                              </p>
+                              <p className="text-xs text-sky-500 font-bold mt-1">
+                                Click to view orders
+                              </p>
                             </div>
                           </div>
                         </Link>
@@ -325,7 +314,9 @@ function Navbar() {
                     )}
                     <span className="text-sm font-semibold text-black dark:text-gray-200 max-w-25 truncate underline decoration-blue-500 decoration-1 underline-offset-4">
                       {user.firstName}
-                      <div className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]'}`}>
+                      <div
+                        className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === "seller" ? "text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]" : "text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]"}`}
+                      >
                         {user.role}
                       </div>
                     </span>
@@ -463,7 +454,9 @@ function Navbar() {
                     <div className="font-bold text-gray-900 dark:text-white capitalize underline decoration-blue-500 decoration-1 underline-offset-4">
                       {user.firstName} {user.lastName}
                     </div>
-                    <div className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === 'seller' ? 'text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]' : 'text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]'}`}>
+                    <div
+                      className={`text-[10px] uppercase font-bold tracking-widest mt-0.5 ${user.role === "seller" ? "text-emerald-500 [text-shadow:0_0_10px_rgba(16,185,129,0.8)]" : "text-sky-500 [text-shadow:0_0_10px_rgba(14,165,233,0.8)]"}`}
+                    >
                       {user.role}
                     </div>
                     <div className="text-xs text-blue-500 font-semibold truncate max-w-50 mt-1">
@@ -521,10 +514,11 @@ function Navbar() {
 const NavLink = ({ to, children, current }) => (
   <Link
     to={to}
-    className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ${current
-      ? "bg-white dark:bg-[#2A2A2A] text-black dark:text-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-none"
-      : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/5"
-      }`}
+    className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+      current
+        ? "bg-white dark:bg-[#2A2A2A] text-black dark:text-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] dark:shadow-none"
+        : "text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/5"
+    }`}
   >
     {children}
   </Link>

@@ -11,9 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader, ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +26,7 @@ const Signup = () => {
     role: "customer", // default role
   });
 
-  const navigate = useNavigate();
+  const { signup } = useAuth();
 
   // Password validation rules
   const passwordRequirements = useMemo(() => {
@@ -43,7 +43,9 @@ const Signup = () => {
   }, []);
 
   const isPasswordValid = useMemo(() => {
-    const validCount = passwordRequirements.filter((req) => req.test(formData.password)).length;
+    const validCount = passwordRequirements.filter((req) =>
+      req.test(formData.password),
+    ).length;
     return validCount >= 3;
   }, [formData.password, passwordRequirements]);
 
@@ -81,32 +83,12 @@ const Signup = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(
-        `${API_URL}/api/v1/users/register`,
-        formData,
-        {
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-      if (res.data.success) {
-        navigate("/verify", { state: { fromSignup: true } });
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      console.error("Error during signup:", error);
-      if (!error.response) {
-        toast.error("Server is not running or unreachable.");
-      } else {
-        toast.error(
-          error.response?.data?.message || "An error occurred during signup",
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+
+    // ✅ Use centralized auth function from AuthContext
+    await signup(formData);
+
+    setLoading(false);
   };
 
   return (
@@ -121,7 +103,9 @@ const Signup = () => {
         className="fixed top-4 left-4 md:top-6 md:left-6 z-50 flex items-center gap-1.5 md:gap-2 text-white hover:text-blue-200 transition-colors bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-white/20 shadow-lg"
       >
         <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-        <span className="font-medium text-sm md:text-base hidden sm:inline">Back to Home</span>
+        <span className="font-medium text-sm md:text-base hidden sm:inline">
+          Back to Home
+        </span>
       </Link>
 
       {/* Logo */}
@@ -235,16 +219,17 @@ const Signup = () => {
                         Password Strength
                       </span>
                       <span
-                        className={`text-xs font-medium ${getPasswordStrength.text === "Strong"
-                          ? "text-green-400"
-                          : getPasswordStrength.text === "Good"
-                            ? "text-blue-400"
-                            : getPasswordStrength.text === "Medium"
-                              ? "text-yellow-400"
-                              : getPasswordStrength.text === "Weak"
-                                ? "text-orange-400"
-                                : "text-red-400"
-                          }`}
+                        className={`text-xs font-medium ${
+                          getPasswordStrength.text === "Strong"
+                            ? "text-green-400"
+                            : getPasswordStrength.text === "Good"
+                              ? "text-blue-400"
+                              : getPasswordStrength.text === "Medium"
+                                ? "text-yellow-400"
+                                : getPasswordStrength.text === "Weak"
+                                  ? "text-orange-400"
+                                  : "text-red-400"
+                        }`}
                       >
                         {getPasswordStrength.text}
                       </span>

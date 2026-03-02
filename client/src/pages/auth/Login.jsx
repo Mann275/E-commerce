@@ -11,11 +11,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader, ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "sonner";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/userSlice";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +23,7 @@ function Login() {
     password: "",
   });
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { login } = useAuth();
 
   // Load saved credentials on component mount
   React.useEffect(() => {
@@ -49,68 +45,12 @@ function Login() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    try {
-      setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.post(`${API_URL}/api/v1/users/login`, formData, {
-        headers: { "Content-Type": "application/json" },
-      });
-      if (res.data.success) {
-        // Store tokens and user data
-        localStorage.setItem("accesstoken", res.data.accesstoken);
-        localStorage.setItem("refreshtoken", res.data.refreshtoken);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+    // ✅ Use centralized auth function from AuthContext
+    await login(formData, rememberMe);
 
-        // Dispatch user to Redux store
-        dispatch(setUser(res.data.user));
-
-        // Handle Remember Me
-        if (rememberMe) {
-          localStorage.setItem("rememberedEmail", formData.email);
-          localStorage.setItem("rememberedPassword", formData.password);
-        } else {
-          localStorage.removeItem("rememberedEmail");
-          localStorage.removeItem("rememberedPassword");
-        }
-
-        navigate("/");
-        dispatch(setUser(res.data.user));
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      if (!error.response) {
-        toast.error("Server is not running or unreachable.");
-      } else {
-        toast.error(
-          error.response?.data?.message || "An error occurred during login",
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDemoLogin = (role) => {
-    const demoCreds = {
-      customer: { email: "customer@example.com", password: "Mann123" },
-      admin: { email: "admin@example.com", password: "Mann123" },
-      seller: { email: "seller@example.com", password: "Mann123" }
-    };
-
-    setFormData(demoCreds[role]);
-    setRememberMe(false);
-
-    // Use a small timeout to ensure state is updated before submit
-    setTimeout(() => {
-      const fakeEvent = { preventDefault: () => { } };
-      // We need to call the actual logic here or use a ref/effect
-      // To keep it simple, I'll just trigger the login with direct data passing if I refactor submitHandler, 
-      // but for now, I'll just let the user click "Sign In" after it fills, 
-      // OR better: call a dedicated login function.
-      // Given React batching, it's safer to just provide the buttons that fill the form.
-    }, 100);
+    setLoading(false);
   };
 
   return (
@@ -251,12 +191,19 @@ function Login() {
             </p>
 
             <div className="w-full pt-4 border-t border-white/10 mt-2">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-4">Demo Accounts</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-4">
+                Demo Accounts
+              </p>
               <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => { setFormData({ email: "customer@example.com", password: "Mann123" }); }}
+                  onClick={() => {
+                    setFormData({
+                      email: "customer@example.com",
+                      password: "Mann123",
+                    });
+                  }}
                   className="bg-white/5 border-white/10 text-white hover:bg-white/20 text-[10px] h-8 px-0"
                 >
                   Customer
@@ -264,7 +211,12 @@ function Login() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => { setFormData({ email: "admin@example.com", password: "Mann123" }); }}
+                  onClick={() => {
+                    setFormData({
+                      email: "admin@example.com",
+                      password: "Mann123",
+                    });
+                  }}
                   className="bg-white/5 border-white/10 text-white hover:bg-white/20 text-[10px] h-8 px-0"
                 >
                   Admin
@@ -272,7 +224,12 @@ function Login() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => { setFormData({ email: "seller@example.com", password: "Mann123" }); }}
+                  onClick={() => {
+                    setFormData({
+                      email: "seller@example.com",
+                      password: "Mann123",
+                    });
+                  }}
                   className="bg-white/5 border-white/10 text-white hover:bg-white/20 text-[10px] h-8 px-0"
                 >
                   Seller
