@@ -21,7 +21,6 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-
 app.use(express.json());
 
 app.use(
@@ -29,7 +28,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:5174",
-      "https://over-clocked.vercel.app/",
+      "https://over-clocked.vercel.app",
       /^https:\/\/.*\.vercel\.app$/, // Allows all Vercel preview domains
     ],
     credentials: true,
