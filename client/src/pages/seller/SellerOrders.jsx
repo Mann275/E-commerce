@@ -140,7 +140,7 @@ function SellerOrders() {
         <div className="overflow-x-auto text-black dark:text-white">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.02]">
+              <tr className="border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/2">
                 <th className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-gray-400">
                   Order ID
                 </th>
@@ -173,7 +173,7 @@ function SellerOrders() {
                   <React.Fragment key={o._id}>
                     <tr
                       onClick={() => toggleExpand(o._id)}
-                      className="hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors group cursor-pointer"
+                      className="hover:bg-gray-50 dark:hover:bg-white/1 transition-colors group cursor-pointer"
                     >
                       <td className="px-6 py-4">
                         <span className="font-black text-xs text-sky-500 bg-sky-500/10 px-2 py-1 rounded-lg uppercase">
@@ -368,7 +368,7 @@ function SellerOrders() {
                                 {o.items?.map((item, idx) => (
                                   <div
                                     key={idx}
-                                    className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-white/[0.02] rounded-xl"
+                                    className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-white/2 rounded-xl"
                                   >
                                     <img
                                       src={
