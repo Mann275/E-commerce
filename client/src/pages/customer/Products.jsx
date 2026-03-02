@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlidersHorizontal, Search, ChevronDown, PackageOpen } from "lucide-react";
+import {
+  SlidersHorizontal,
+  Search,
+  ChevronDown,
+  PackageOpen,
+} from "lucide-react";
 import FilterSidebar from "../../components/FilterSidebar";
 import ProductCard from "../../components/ProductCard";
-import axios from "axios";
+import apiClient from "../../api/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts, setLoading, setError } from "../../redux/productSlice";
 import PageLoader from "../../components/PageLoader";
@@ -29,8 +34,7 @@ function Products() {
     const fetchProducts = async () => {
       dispatch(setLoading(true));
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        const res = await axios.get(`${API_URL}/api/v1/products/getallproducts`);
+        const res = await apiClient.get(`/products/getallproducts`);
         if (res.data.success) {
           dispatch(setProducts(res.data.products));
         }
@@ -46,56 +50,80 @@ function Products() {
 
   // Apply Client-Side Filtering & Sorting
   useEffect(() => {
-    let result = products.filter(p => !p.status || p.status === "active");
+    let result = products.filter((p) => !p.status || p.status === "active");
 
     // Search filter
     if (searchQuery) {
-      result = result.filter(p =>
-        p.productName.toLowerCase().includes(searchQuery.toLowerCase())
+      result = result.filter((p) =>
+        p.productName.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
     // Category filter
     if (selectedCategories.length > 0) {
-      result = result.filter(p => {
+      result = result.filter((p) => {
         // Synonym Logic for CPU / Processor
         if (selectedCategories.includes("CPU / Processor")) {
-          return selectedCategories.includes(p.category) || p.category === "CPU" || p.category === "Processor" || p.category === "CPU / Processor";
+          return (
+            selectedCategories.includes(p.category) ||
+            p.category === "CPU" ||
+            p.category === "Processor" ||
+            p.category === "CPU / Processor"
+          );
         }
         return selectedCategories.includes(p.category);
       });
     }
 
     // Price filter
-    result = result.filter(p => {
-      const finalPrice = p.discountPercentage > 0
-        ? p.productPrice - (p.productPrice * (p.discountPercentage / 100))
-        : p.productPrice;
+    result = result.filter((p) => {
+      const finalPrice =
+        p.discountPercentage > 0
+          ? p.productPrice - p.productPrice * (p.discountPercentage / 100)
+          : p.productPrice;
       return finalPrice >= priceRange.min && finalPrice <= priceRange.max;
     });
 
     // Sorting
     if (sortBy === "price-low") {
       result.sort((a, b) => {
-        const pA = a.discountPercentage > 0 ? a.productPrice * (1 - a.discountPercentage / 100) : a.productPrice;
-        const pB = b.discountPercentage > 0 ? b.productPrice * (1 - b.discountPercentage / 100) : b.productPrice;
+        const pA =
+          a.discountPercentage > 0
+            ? a.productPrice * (1 - a.discountPercentage / 100)
+            : a.productPrice;
+        const pB =
+          b.discountPercentage > 0
+            ? b.productPrice * (1 - b.discountPercentage / 100)
+            : b.productPrice;
         return pA - pB;
       });
     } else if (sortBy === "price-high") {
       result.sort((a, b) => {
-        const pA = a.discountPercentage > 0 ? a.productPrice * (1 - a.discountPercentage / 100) : a.productPrice;
-        const pB = b.discountPercentage > 0 ? b.productPrice * (1 - b.discountPercentage / 100) : b.productPrice;
+        const pA =
+          a.discountPercentage > 0
+            ? a.productPrice * (1 - a.discountPercentage / 100)
+            : a.productPrice;
+        const pB =
+          b.discountPercentage > 0
+            ? b.productPrice * (1 - b.discountPercentage / 100)
+            : b.productPrice;
         return pB - pA;
       });
     } else if (sortBy === "newest") {
       result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (sortBy === "rating") {
       result.sort((a, b) => {
-        const ratingA = a.reviews?.length > 0 ? a.reviews.reduce((s, r) => s + r.rating, 0) / a.reviews.length : 0;
-        const ratingB = b.reviews?.length > 0 ? b.reviews.reduce((s, r) => s + r.rating, 0) / b.reviews.length : 0;
+        const ratingA =
+          a.reviews?.length > 0
+            ? a.reviews.reduce((s, r) => s + r.rating, 0) / a.reviews.length
+            : 0;
+        const ratingB =
+          b.reviews?.length > 0
+            ? b.reviews.reduce((s, r) => s + r.rating, 0) / b.reviews.length
+            : 0;
         return ratingB - ratingA;
       });
-    } 
+    }
 
     setFilteredProducts(result);
     setDisplayCount(9); // Reset pagination when filters change
@@ -103,7 +131,6 @@ function Products() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black transition-colors duration-300 pt-24 pb-20">
-
       {/* Background Effect */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-sky-500/10 dark:bg-sky-900/20 blur-[120px]" />
@@ -111,7 +138,6 @@ function Products() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
         {/* Header Section */}
         <div className="mb-8 md:mb-12">
           <motion.div
@@ -144,7 +170,10 @@ function Products() {
 
             {/* Search Bar */}
             <div className="relative flex-1 md:w-80 hidden sm:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <input
                 type="text"
                 placeholder="Search components..."
@@ -157,7 +186,9 @@ function Products() {
 
           <div className="flex items-center gap-3 w-full md:w-auto justify-between sm:justify-end">
             <span className="text-sm text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-              {loading ? "Loading..." : `Showing ${filteredProducts.length} Results`}
+              {loading
+                ? "Loading..."
+                : `Showing ${filteredProducts.length} Results`}
             </span>
             <div className="relative">
               <select
@@ -165,20 +196,21 @@ function Products() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none pl-4 pr-10 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-sky-500 dark:focus:border-sky-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer shadow-sm min-w-35"
               >
-
                 <option value="newest">Newest Arrivals</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
                 <option value="rating">Top Rated</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+              <ChevronDown
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                size={16}
+              />
             </div>
           </div>
         </div>
 
         {/* Main Content: Sidebar + Grid */}
         <div className="flex flex-col lg:flex-row gap-8 relative items-start">
-
           {/* Filter Sidebar */}
           <FilterSidebar
             isMobileOpen={isMobileFilterOpen}
@@ -198,8 +230,13 @@ function Products() {
             ) : filteredProducts.length === 0 ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 py-20">
                 <PackageOpen size={64} className="mb-4 opacity-50" />
-                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">No products found</h3>
-                <p>Try adjusting your search or filters to find what you're looking for.</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                  No products found
+                </h3>
+                <p>
+                  Try adjusting your search or filters to find what you're
+                  looking for.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -214,8 +251,9 @@ function Products() {
             {filteredProducts.length > displayCount && (
               <div className="mt-12 text-center pb-12">
                 <button
-                  onClick={() => setDisplayCount(prev => prev + 9)}
-                  className="px-8 py-3 bg-white dark:bg-zinc-900 border border-blue-400/30 dark:border-blue-500/30 text-gray-900 dark:text-white font-semibold rounded-full hover:border-sky-500 hover:text-sky-500 dark:hover:border-sky-500 dark:hover:text-sky-400 transition-colors shadow-sm relative group overflow-hidden">
+                  onClick={() => setDisplayCount((prev) => prev + 9)}
+                  className="px-8 py-3 bg-white dark:bg-zinc-900 border border-blue-400/30 dark:border-blue-500/30 text-gray-900 dark:text-white font-semibold rounded-full hover:border-sky-500 hover:text-sky-500 dark:hover:border-sky-500 dark:hover:text-sky-400 transition-colors shadow-sm relative group overflow-hidden"
+                >
                   <span className="relative z-10">Load More Products</span>
                   <div className="absolute inset-0 bg-sky-50 dark:bg-sky-500/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0"></div>
                 </button>

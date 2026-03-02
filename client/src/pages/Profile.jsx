@@ -17,7 +17,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
+import apiClient from "../api/axiosInstance";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../utils/cropImage";
 
@@ -85,18 +85,7 @@ const Profile = () => {
 
     setPasswordLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const accessToken = localStorage.getItem("accesstoken");
-
-      const res = await axios.put(
-        `${API_URL}/api/v1/users/change-password`,
-        passwordData,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+      const res = await apiClient.put(`/users/change-password`, passwordData);
 
       if (res.data.success) {
         toast.success(res.data.message);
@@ -131,8 +120,7 @@ const Profile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const res = await axios.get(`${API_URL}/api/v1/users/get-user/${userId}`);
+      const res = await apiClient.get(`/users/get-user/${userId}`);
       if (res.data.success) {
         const fetchedUser = res.data.user;
         dispatch(setUser(fetchedUser));
@@ -214,22 +202,17 @@ const Profile = () => {
   };
 
   const submitAddressChange = async () => {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-    const accessToken = localStorage.getItem("accesstoken");
     try {
       let res;
       if (editingAddressId) {
         // Edit existing address
-        res = await axios.put(
-          `${API_URL}/api/v1/users/address/${editingAddressId}`,
+        res = await apiClient.put(
+          `/users/address/${editingAddressId}`,
           addressData,
-          { headers: { Authorization: `Bearer ${accessToken}` } },
         );
       } else {
         // Add new address
-        res = await axios.post(`${API_URL}/api/v1/users/address`, addressData, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        res = await apiClient.post(`/users/address`, addressData);
       }
 
       if (res.data.success) {
@@ -244,15 +227,8 @@ const Profile = () => {
   };
 
   const deleteAddress = async (addressId) => {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-    const accessToken = localStorage.getItem("accesstoken");
     try {
-      const res = await axios.delete(
-        `${API_URL}/api/v1/users/address/${addressId}`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      );
+      const res = await apiClient.delete(`/users/address/${addressId}`);
       if (res.data.success) {
         toast.success(res.data.message);
         dispatch(setUser(res.data.user));
@@ -316,18 +292,7 @@ const Profile = () => {
       } else if (removePic) {
         formData.append("profilePic", "");
       }
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-
-      const res = await axios.put(
-        `${API_URL}/api/v1/users/update/${userId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+      const res = await apiClient.put(`/users/update/${userId}`, formData);
       if (res.data.success) {
         toast.success(res.data.message || "Profile updated successfully");
         dispatch(setUser(res.data.user));
@@ -625,7 +590,7 @@ const Profile = () => {
                 ) : (
                   <div className="flex flex-col h-full space-y-4">
                     {user?.addresses && user.addresses.length > 0 ? (
-                      <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+                      <div className="space-y-2 max-h-62.5 overflow-y-auto pr-1 custom-scrollbar">
                         {user.addresses.map((addr) => (
                           <div
                             key={addr._id}

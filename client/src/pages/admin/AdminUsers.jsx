@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import apiClient from "../../api/axiosInstance";
 import { toast } from "sonner";
 import {
   Users,
@@ -26,11 +26,7 @@ function AdminUsers() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-      const res = await axios.get(`${API_URL}/api/v1/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get(`/admin/users`);
 
       if (res.data.success) {
         setUsers(res.data.users);
@@ -55,21 +51,9 @@ function AdminUsers() {
     }
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-
-      // Optimistic Update
-      setUsers(
-        users.map((u) => (u._id === userId ? { ...u, role: newRole } : u)),
-      );
-
-      const res = await axios.put(
-        `${API_URL}/api/v1/admin/users/role/${userId}`,
-        { role: newRole },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await apiClient.put(`/admin/users/role/${userId}`, {
+        role: newRole,
+      });
 
       if (res.data.success) {
         toast.success(`Role updated to ${newRole}`);
@@ -89,24 +73,7 @@ function AdminUsers() {
     }
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-
-      const isCurrentlyBanned = currentStatus === "banned";
-      const newStatus = isCurrentlyBanned ? "active" : "banned";
-
-      // Optimistic Update
-      setUsers(
-        users.map((u) => (u._id === userId ? { ...u, status: newStatus } : u)),
-      );
-
-      const res = await axios.put(
-        `${API_URL}/api/v1/admin/users/ban/${userId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await apiClient.put(`/admin/users/ban/${userId}`, {});
 
       if (res.data.success) {
         toast.success(res.data.message);
@@ -137,18 +104,7 @@ function AdminUsers() {
     }
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-
-      // Optimistic Update
-      setUsers(users.filter((u) => u._id !== userId));
-
-      const res = await axios.delete(
-        `${API_URL}/api/v1/admin/users/${userId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const res = await apiClient.delete(`/admin/users/${userId}`);
 
       if (res.data.success) {
         toast.success(res.data.message);

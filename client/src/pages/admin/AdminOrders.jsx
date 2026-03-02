@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import apiClient from "../../api/axiosInstance";
 import { toast } from "sonner";
 import {
   ShoppingCart,
@@ -31,11 +31,7 @@ function AdminOrders() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-      const res = await axios.get(`${API_URL}/api/v1/admin/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get(`/admin/orders`);
 
       if (res.data.success) {
         setOrders(res.data.orders);
@@ -56,21 +52,9 @@ function AdminOrders() {
   const handleStatusUpdate = async (orderId, newStatus) => {
     try {
       setStatusUpdating(orderId);
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const token = localStorage.getItem("accesstoken");
-
-      // Optimistic
-      setOrders(
-        orders.map((o) =>
-          o._id === orderId ? { ...o, orderStatus: newStatus } : o,
-        ),
-      );
-
-      const res = await axios.put(
-        `${API_URL}/api/v1/orders/status/${orderId}`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await apiClient.put(`/orders/status/${orderId}`, {
+        status: newStatus,
+      });
 
       if (res.data.success) {
         toast.success(`Order transitioned to ${newStatus}`);
