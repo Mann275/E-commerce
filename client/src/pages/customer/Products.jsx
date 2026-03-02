@@ -14,7 +14,7 @@ function Products() {
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("featured");
+  const [sortBy, setSortBy] = useState("newest");
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   // Sidebar Filters State
@@ -95,10 +95,7 @@ function Products() {
         const ratingB = b.reviews?.length > 0 ? b.reviews.reduce((s, r) => s + r.rating, 0) / b.reviews.length : 0;
         return ratingB - ratingA;
       });
-    } else if (sortBy === "featured") {
-      // For demo, featured means high discount or recently updated
-      result.sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0));
-    }
+    } 
 
     setFilteredProducts(result);
     setDisplayCount(9); // Reset pagination when filters change
@@ -168,7 +165,7 @@ function Products() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none pl-4 pr-10 py-3 rounded-xl bg-gray-100 dark:bg-white/5 border-transparent focus:bg-white dark:focus:bg-zinc-900 focus:border-sky-500 dark:focus:border-sky-500 text-gray-900 dark:text-white text-sm outline-none transition-all cursor-pointer shadow-sm min-w-[140px]"
               >
-                <option value="featured">Featured</option>
+
                 <option value="newest">Newest Arrivals</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>

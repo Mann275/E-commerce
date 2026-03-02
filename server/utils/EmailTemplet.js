@@ -232,7 +232,7 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                       <div class="rotate-gear" style="font-size: 36px">⚙️</div>
                     </td>
                     <td align="center" valign="middle">
-                      <h1
+                      <div
                         style="
                           margin: 0;
                           color: #ffffffff;
@@ -242,18 +242,16 @@ export const welcomeEmailTemplate = (firstName, email, token) => `
                         "
                       >
                         Over
-                      </h1>
-                      <h1
+                         <span
                         style="
-                          margin: 0;
                           color: #0084ffff;
-                          font-size: 22px;
-                          font-weight: 700;
                           text-shadow: 0 0 20px rgba(11, 95, 144, 0.5);
                         "
                       >
                         Clocked
-                      </h1>
+                      </span>
+                      </div>
+                     
                       <p
                         style="
                           margin: 5px 0 0 0;

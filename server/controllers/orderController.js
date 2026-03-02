@@ -109,6 +109,9 @@ export const createOrder = async (req, res) => {
                 await order.save();
             }
 
+            // Clear Cart immediately for Online payments too to prevent resubmission bugs
+            await Cart.findOneAndDelete({ userId });
+
             return res.status(201).json({
                 success: true,
                 message: "Razorpay order created",

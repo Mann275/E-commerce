@@ -33,6 +33,11 @@ function SellerAnalytics() {
 
                 const sellerOrders = orderRes.data.success ? orderRes.data.orders : [];
                 const totalRevenue = sellerOrders.reduce((acc, order) => {
+                    // Ignore cancelled or failed orders
+                    if (order.orderStatus === "Cancelled" || order.orderStatus === "Failed") {
+                        return acc;
+                    }
+
                     // Only sum items belonging to this seller in the order
                     const sellerItemsTotal = order.items
                         .filter(item => item.sellerId === user._id || item.sellerId?._id === user._id)
@@ -84,7 +89,7 @@ function SellerAnalytics() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-sm hover:shadow-xl hover:shadow-sky-500/5 transition-all duration-300 group overflow-hidden"
+                        className="bg-white dark:bg-zinc-950 border border-gray-100 dark:border-white/5 rounded-4xl shadow-sm hover:shadow-xl hover:shadow-sky-500/5 transition-all duration-300 group overflow-hidden"
                     >
                         <Link
                             to={stat.path}
@@ -115,7 +120,7 @@ function SellerAnalytics() {
 
             {/* Main Analytics Panel */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 bg-white dark:bg-zinc-950 border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-8 min-h-[450px] relative overflow-hidden group shadow-sm">
+                <div className="lg:col-span-2 bg-white dark:bg-zinc-950 border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-8 min-h-112.5 relative overflow-hidden group shadow-sm">
                     <div className="flex items-center justify-between mb-8 relative z-10">
                         <div>
                             <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter italic">Sales Velocity</h2>
@@ -127,7 +132,7 @@ function SellerAnalytics() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center h-[280px] relative z-10">
+                    <div className="flex flex-col items-center justify-center h-70relative z-10">
                         {loading ? (
                             <p className="text-xs font-black text-sky-500 uppercase tracking-widest animate-pulse">Analyzing sales data...</p>
                         ) : (
@@ -139,7 +144,7 @@ function SellerAnalytics() {
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-sky-500 to-blue-600 border border-white/5 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-2xl flex flex-col items-center justify-center">
+                <div className="bg-linear-to-br from-sky-500 to-blue-600 border border-white/5 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-2xl flex flex-col items-center justify-center">
                     <div className="relative z-10 text-center">
                         <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-50" />
                         <h2 className="text-xl font-black uppercase tracking-tighter italic mb-2">Grow Your Shop</h2>

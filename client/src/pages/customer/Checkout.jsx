@@ -158,7 +158,12 @@ function Checkout() {
                         modal: {
                             ondismiss: function () {
                                 setLoading(false);
-                                toast.error("Payment cancelled by user");
+                                toast.error("Payment cancelled. Order saved as Pending.");
+                                dispatch(clearCart());
+                                dispatch(syncClearCart(cartItems));
+                                setTimeout(() => {
+                                    navigate("/my-orders");
+                                }, 500);
                             }
                         }
                     };
@@ -166,7 +171,12 @@ function Checkout() {
                     const rzp = new window.Razorpay(options);
                     rzp.on('payment.failed', function (response) {
                         setLoading(false);
-                        toast.error("Payment failed. Please try again.");
+                        toast.error("Payment failed. Order saved as Pending.");
+                        dispatch(clearCart());
+                        dispatch(syncClearCart(cartItems));
+                        setTimeout(() => {
+                            navigate("/my-orders");
+                        }, 500);
                     });
                     rzp.open();
                 }
