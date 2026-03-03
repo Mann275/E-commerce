@@ -115,10 +115,10 @@ export const verify = async (req, res) => {
 
     // Generate access and refresh tokens for auto-login
     const accesstoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
+      expiresIn: "1h",
     });
     const refreshtoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "365d",
+      expiresIn: "10h",
     });
 
     // Create session for the user
@@ -206,10 +206,10 @@ export const login = async (req, res) => {
 
     // Generate a new token for the user
     const accesstoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
+      expiresIn: "1h",
     });
     const refreshtoken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "365d",
+      expiresIn: "10h",
     });
     user.isloggedin = true;
     await user.save();
