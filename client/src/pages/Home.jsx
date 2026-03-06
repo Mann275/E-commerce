@@ -12,9 +12,13 @@ function Home() {
     <div className="relative h-screen bg-black text-white overflow-hidden transition-colors duration-300">
 
       {/* Background Media */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      <div
+        className="absolute inset-0 z-0 overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: 'url("https://res.cloudinary.com/mann2729/image/upload/v1772775671/half_fmrngu.jpg")' }}
+      >
         <video
           src="https://res.cloudinary.com/mann2729/video/upload/v1772777744/full_tlbe7o.mp4"
+          poster="https://res.cloudinary.com/mann2729/image/upload/v1772775671/half_fmrngu.jpg"
           autoPlay
           muted
           loop
@@ -82,7 +86,7 @@ function Home() {
           >
             <button
               onClick={() => navigate("/products")}
-              className="group relative w-full sm:w-auto px-12 py-5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl rounded-full transition-all flex items-center justify-center gap-3 overflow-hidden shadow-[0_0_40px_rgba(37,99,235,0.4)]"
+              className="group relative w-full sm:w-auto px-4 py-3 bg-transparent/20  backdrop-blur-sm cursor-pointer text-white font-bold text-xl rounded-full transition-all flex items-center justify-center gap-3 overflow-hidden shadow-[0_0_40px_rgba(37,99,235,0.4)]"
             >
               <span className="relative z-10">START BUILDING</span>
               <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform" />

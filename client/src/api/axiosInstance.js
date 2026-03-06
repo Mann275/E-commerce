@@ -48,11 +48,15 @@ apiClient.interceptors.response.use(
           }
         }
       } catch (refreshError) {
-        // Refresh failed, logout user
-        localStorage.removeItem("accesstoken");
-        localStorage.removeItem("refreshtoken");
-        localStorage.removeItem("user");
-        window.location.href = "/login";
+        // Refresh failed. 
+        // IMPORTANT: Only logout if the server actually responded with an error (e.g. 401, 403).
+        // If it's a network error (server down), do NOT clear storage or redirect.
+        if (refreshError.response) {
+          localStorage.removeItem("accesstoken");
+          localStorage.removeItem("refreshtoken");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }

@@ -24,7 +24,12 @@ export const AuthProvider = ({ children }) => {
   // LOGIN FUNCTION - Centralized authentication logic using authService
   const login = async (formData, rememberMe = false) => {
     try {
-      const data = await authService.login(formData);
+      // 2 second delay for smooth UX
+      const timer = new Promise(resolve => setTimeout(resolve, 2000));
+      const [data] = await Promise.all([
+        authService.login(formData),
+        timer
+      ]);
 
       if (data.success) {
         // Store tokens and user data
@@ -108,11 +113,10 @@ export const AuthProvider = ({ children }) => {
 
   // LOGOUT FUNCTION - Centralized logout logic
   const logout = async () => {
+    const toastId = toast.loading("Logging out...");
     try {
       // Call backend logout API (ignore errors)
-      await authService.logout().catch(() => {
-        // Silent fail - proceed with local logout anyway
-      });
+      await authService.logout().catch(() => { });
     } catch (error) {
       // Silent error handling - logout locally anyway
     } finally {
@@ -128,6 +132,7 @@ export const AuthProvider = ({ children }) => {
 
       // Redirect to login
       navigate("/login");
+      toast.dismiss(toastId);
       toast.success("Logged out successfully");
     }
   };

@@ -20,7 +20,7 @@ export default function ServerWakeup() {
           setShow(false);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     // Step 2: if not resolved in 5s, show banner
     const bannerTimer = setTimeout(() => {
@@ -41,7 +41,7 @@ export default function ServerWakeup() {
             clearInterval(retryInterval);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }, 4000);
 
     // Animate dots

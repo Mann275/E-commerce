@@ -11,7 +11,7 @@ import ProductCard from "../../components/ProductCard";
 import apiClient from "../../api/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { setProducts, setLoading, setError } from "../../redux/productSlice";
-import PageLoader from "../../components/PageLoader";
+import ServerWakeup from "../../components/ServerWakeup";
 
 function Products() {
   const dispatch = useDispatch();
@@ -35,6 +35,7 @@ function Products() {
       dispatch(setLoading(true));
       try {
         const res = await apiClient.get(`/products/getallproducts`);
+
         if (res.data.success) {
           dispatch(setProducts(res.data.products));
         }
@@ -223,9 +224,15 @@ function Products() {
 
           {/* Product Grid */}
           <div className="flex-1 w-full relative min-h-screen">
+            <ServerWakeup />
             {loading ? (
               <div className="absolute inset-0 flex items-center justify-center min-h-100">
-                <PageLoader />
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin" />
+                  <p className="text-sm font-bold text-gray-500 dark:text-gray-400 animate-pulse uppercase tracking-widest">
+                    Fetching Gear...
+                  </p>
+                </div>
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 py-20">

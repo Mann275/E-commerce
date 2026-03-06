@@ -11,16 +11,17 @@ export const AuthInterceptor = ({ children }) => {
   const location = useLocation();
   const { isAuthenticated, user } = useSelector((state) => state.user);
 
-  // Global Axios Interceptor to catch 403 Banned or 401 Unauthorized securely
+  // Interceptor to catch 403 Banned or 401 Unauthorized securely
   useLayoutEffect(() => {
-    const responseInterceptor = axios.interceptors.response.use(
+    const responseInterceptor = apiClient.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (
+        const isBannedError =
           error.response?.data?.isBanned ||
           (error.response?.status === 403 &&
-            error.response?.data?.message?.includes("suspended"))
-        ) {
+            error.response?.data?.message?.includes("suspended"));
+
+        if (isBannedError) {
           // Force the Banned State locally to trigger Guards natively
           const currentUserStr = localStorage.getItem("user");
           if (currentUserStr) {
@@ -37,8 +38,11 @@ export const AuthInterceptor = ({ children }) => {
           location.pathname !== "/login" &&
           location.pathname !== "/signup"
         ) {
+          // Only clear if we actually got a 401. 
+          // If server is down (no response), we stay "logged in" locally.
           localStorage.removeItem("user");
           localStorage.removeItem("accesstoken");
+          localStorage.removeItem("refreshtoken");
           dispatch(setUser(null));
           navigate("/login", { replace: true });
         }
@@ -47,7 +51,7 @@ export const AuthInterceptor = ({ children }) => {
     );
 
     return () => {
-      axios.interceptors.response.eject(responseInterceptor);
+      apiClient.interceptors.response.eject(responseInterceptor);
     };
   }, [dispatch, navigate, location.pathname]);
 
