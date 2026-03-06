@@ -114,7 +114,7 @@ function Checkout() {
             return;
           }
 
-          const { razorpayOrder } = res.data;
+          const { razorpayOrder, orderIds } = res.data;
           const options = {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_YourKeyHere",
             amount: razorpayOrder.amount,
@@ -165,27 +165,34 @@ function Checkout() {
               color: "#0ea5e9",
             },
             modal: {
-              ondismiss: function () {
+              ondismiss: async function () {
                 setLoading(false);
-                toast.error("Payment cancelled. Order saved as Pending.");
-                dispatch(clearCart());
-                dispatch(syncClearCart(cartItems));
-                setTimeout(() => {
-                  navigate("/my-orders");
-                }, 500);
+                toast.error("Payment cancelled. Your cart has been preserved.");
+
+                try {
+                  // Tell backend to delete the temporary pending orders
+                  await apiClient.post("/orders/cancel-payment", { orderIds });
+                } catch (err) {
+                  console.error("Failed to cancel pending orders:", err);
+                }
+
+                // Keep inside checkout, keep cart items intact
               },
             },
           };
 
           const rzp = new window.Razorpay(options);
-          rzp.on("payment.failed", function (response) {
+          rzp.on("payment.failed", async function (response) {
             setLoading(false);
-            toast.error("Payment failed. Order saved as Pending.");
-            dispatch(clearCart());
-            dispatch(syncClearCart(cartItems));
-            setTimeout(() => {
-              navigate("/my-orders");
-            }, 500);
+            toast.error("Payment failed. Your cart has been preserved.");
+
+            try {
+              // Tell backend to delete the temporary pending orders
+              await apiClient.post("/orders/cancel-payment", { orderIds });
+            } catch (err) {
+              console.error("Failed to cancel pending orders:", err);
+            }
+            // Keep inside checkout, keep cart items intact
           });
           rzp.open();
         }
@@ -246,12 +253,11 @@ function Checkout() {
                         key={addr._id}
                         onClick={() => handleSelectSavedAddress(addr)}
                         className={`shrink-0 w-64 p-4 rounded-2xl border-2 transition-all cursor-pointer relative group
-                                                    ${
-                                                      selectedAddressId ===
-                                                      addr._id
-                                                        ? "border-sky-500 bg-sky-500/5 shadow-lg shadow-sky-500/10"
-                                                        : "border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-zinc-900/30 hover:border-gray-200 dark:hover:border-white/10"
-                                                    }
+                                                    ${selectedAddressId ===
+                            addr._id
+                            ? "border-sky-500 bg-sky-500/5 shadow-lg shadow-sky-500/10"
+                            : "border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-zinc-900/30 hover:border-gray-200 dark:hover:border-white/10"
+                          }
                                                 `}
                       >
                         <div className="flex items-center gap-2 mb-2">
@@ -399,11 +405,10 @@ function Checkout() {
                     key={method}
                     onClick={() => setPaymentMethod(method)}
                     className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex flex-col items-center gap-3
-                                            ${
-                                              paymentMethod === method
-                                                ? "border-sky-500 bg-sky-500/5 shadow-lg shadow-sky-500/5 transition-all duration-300"
-                                                : "border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10"
-                                            }
+                                            ${paymentMethod === method
+                        ? "border-sky-500 bg-sky-500/5 shadow-lg shadow-sky-500/5 transition-all duration-300"
+                        : "border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10"
+                      }
                                         `}
                   >
                     <div
@@ -497,11 +502,10 @@ function Checkout() {
                 type="submit"
                 disabled={loading}
                 className={`w-full py-4 rounded-xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-xl flex items-center justify-center gap-3
-                                    ${
-                                      loading
-                                        ? "bg-gray-100 dark:bg-zinc-800 text-gray-500 cursor-not-allowed uppercase"
-                                        : "bg-zinc-900 dark:bg-white dark:text-black text-white hover:scale-[1.02] active:scale-95 shadow-sky-500/10"
-                                    }
+                                    ${loading
+                    ? "bg-gray-100 dark:bg-zinc-800 text-gray-500 cursor-not-allowed uppercase"
+                    : "bg-zinc-900 dark:bg-white dark:text-black text-white hover:scale-[1.02] active:scale-95 shadow-sky-500/10"
+                  }
                                 `}
               >
                 {loading ? "Authorizing..." : "Initialize Order"}

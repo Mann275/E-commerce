@@ -40,6 +40,7 @@ export const createOrder = async (req, res) => {
         const createdOrders = [];
 
         // VALIDATION: Check if all items are still active and in stock
+        let globalSubtotal = 0;
         for (const item of items) {
             const prodId = item.productId?._id || item.productId || item._id;
             if (!prodId) {
@@ -56,7 +57,13 @@ export const createOrder = async (req, res) => {
             if (product.quantity < item.quantity) {
                 return res.status(400).json({ success: false, message: `Insufficient stock for "${product.productName}". Available: ${product.quantity}` });
             }
+            const itemPrice = item.price || item.productPrice || item.finalPrice || 0;
+            globalSubtotal += itemPrice * item.quantity;
         }
+
+        const globalTax = globalSubtotal * 0.18;
+        const globalShipping = globalSubtotal > 50000 ? 0 : 500;
+        const grandTotal = globalSubtotal + globalTax + globalShipping;
 
         for (const sId in ordersBySeller) {
             const sellerItems = ordersBySeller[sId];
@@ -73,10 +80,16 @@ export const createOrder = async (req, res) => {
 
             const sellerTotal = processedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+            // Pro-rate the tax and shipping across the sellers to ensure they add up to the global sum exactly
+            const sellerRatio = globalSubtotal > 0 ? sellerTotal / globalSubtotal : 0;
+            const sellerTax = globalTax * sellerRatio;
+            const sellerShipping = globalShipping * sellerRatio;
+            const finalSellerAmount = sellerTotal + sellerTax + sellerShipping;
+
             const newOrder = new Order({
                 userId,
                 items: processedItems,
-                totalAmount: sellerTotal,
+                totalAmount: finalSellerAmount, // Uses precisely scaled subset of user checkout total
                 paymentMethod,
                 shippingAddress,
                 orderStatus: "Pending" // All orders start as Pending (Awaiting Confirmation by seller or payment gateway)
@@ -96,7 +109,8 @@ export const createOrder = async (req, res) => {
         // If Online Payment, generate Razorpay Order
         if (paymentMethod === "Online") {
             const options = {
-                amount: Math.round(totalAmount * 100), // convert to paise
+                amount: Math.round(grandTotal * 100), // convert to paise, using exact Grand Total
+
                 currency: "INR",
                 receipt: `receipt_${Date.now()}`
             };
@@ -109,8 +123,8 @@ export const createOrder = async (req, res) => {
                 await order.save();
             }
 
-            // Clear Cart immediately for Online payments too to prevent resubmission bugs
-            await Cart.findOneAndDelete({ userId });
+            // Do NOT Clear Cart immediately for Online payments.
+            // We defer Cart.findOneAndDelete({ userId }) until verifyPayment is successful.
 
             return res.status(201).json({
                 success: true,
@@ -295,6 +309,36 @@ export const verifyPayment = async (req, res) => {
         }
     } catch (error) {
         console.error("Payment verification error:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+// Cancel stuck payment orders (e.g user closed modal)
+export const cancelPaymentOrders = async (req, res) => {
+    try {
+        const { orderIds } = req.body;
+        const userId = req.user._id;
+
+        if (!orderIds || orderIds.length === 0) {
+            return res.status(400).json({ success: false, message: "No active order IDs provided." });
+        }
+
+        const orders = await Order.find({ _id: { $in: orderIds }, userId, orderStatus: "Pending" });
+
+        for (const order of orders) {
+            // Restore inventory lock for each item
+            for (const item of order.items) {
+                await Product.findByIdAndUpdate(item.productId, {
+                    $inc: { quantity: item.quantity }
+                });
+            }
+            // Permanently delete the "Pending" temporary order since payment failed/cancelled
+            await Order.findByIdAndDelete(order._id);
+        }
+
+        res.status(200).json({ success: true, message: "Pending payment orders cleared successfully." });
+    } catch (error) {
+        console.error("Cancel payment error:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };

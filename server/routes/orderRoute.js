@@ -1,11 +1,12 @@
 import express from "express";
-import { getSellerOrders, updateOrderStatus, createOrder, getMyOrders, cancelOrder, verifyPayment } from "../controllers/orderController.js";
+import { getSellerOrders, updateOrderStatus, createOrder, getMyOrders, cancelOrder, verifyPayment, cancelPaymentOrders } from "../controllers/orderController.js";
 import { isAuthenticated, isAdminOrSeller } from "../middleware/isAuthenticated.js";
 
 const router = express.Router();
 
 router.post("/create", isAuthenticated, createOrder);
 router.post("/verify-payment", isAuthenticated, verifyPayment);
+router.post("/cancel-payment", isAuthenticated, cancelPaymentOrders);
 router.get("/my-orders", isAuthenticated, getMyOrders);
 router.put("/cancel/:orderId", isAuthenticated, cancelOrder);
 
