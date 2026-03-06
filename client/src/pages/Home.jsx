@@ -1,88 +1,97 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Zap, Shield, Monitor, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
 
 function Home() {
   const navigate = useNavigate();
   const { user } = useSelector((store) => store.user);
 
-
-  useEffect(() => {
-    try {
-      const userString = localStorage.getItem("user");
-      if (userString) {
-        setUser(JSON.parse(userString));
-      }
-    } catch (e) { }
-  }, []);
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 text-gray-900 dark:text-white transition-colors duration-300 overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative flex flex-col justify-center items-center px-4 md:px-0 pt-24 pb-16 md:pt-32 md:pb-20 mb-10 min-h-[70vh]">
-        {/* Simple subtle background accent */}
-        <div className="absolute top-0 inset-x-0 h-96 bg-linear-to-b from-blue-500/10 dark:from-blue-600/10 to-transparent pointer-events-none"
-        />
+    <div className="relative h-screen bg-black text-white overflow-hidden transition-colors duration-300">
 
-        <div className="container mx-auto relative z-10 text-center w-full max-w-5xl">
+      {/* Background Media */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <video
+          src="https://res.cloudinary.com/mann2729/video/upload/v1772777744/full_tlbe7o.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
+
+      {/* Hero Section */}
+      <section className="relative z-10 flex flex-col justify-center items-center px-4 md:px-0 h-full pt-20">
+        <div className="container mx-auto text-center w-full max-w-5xl">
           <div className="mb-6 md:mb-10">
             {user ? (
-              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 mb-8">
-                <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                  Welcome back, <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">{user.firstName}</span>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-8 backdrop-blur-md"
+              >
+                <span className="text-sm font-semibold text-blue-300">
+                  Welcome back, <span className="text-emerald-400 font-extrabold">{user.firstName}</span>
                 </span>
-              </div>
+              </motion.div>
             ) : (
-              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 mb-8">
-                <Sparkles className="w-4 h-4 text-blue-500" />
-                <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-8 backdrop-blur-md"
+              >
+                <Sparkles className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-semibold text-blue-300">
                   OverClocked Live
                 </span>
-              </div>
+              </motion.div>
             )}
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight mb-8">
-              <span className="text-gray-900 dark:text-white">LIMITLESS</span>
-              <br />
-              <span className="text-blue-600 dark:text-blue-400">POWER</span>
-            </h1>
+            <motion.h1
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="text-6xl md:text-8xl lg:text-9xl font-black leading-tight tracking-tighter mb-8 drop-shadow-2xl"
+            >
+              LIMITLESS<br />
+              <span className="text-blue-500">POWER</span>
+            </motion.h1>
           </div>
 
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 1 }}
+            className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed font-light"
+          >
             Forge your ultimate machine.
-            <span className="block mt-2 font-semibold text-gray-800 dark:text-gray-200">
+            <span className="block mt-2 font-semibold text-white">
               100% Genuine. Next-Day Delivery. Unmatched Support.
             </span>
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto px-4 sm:px-0">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto px-4 sm:px-0"
+          >
             <button
               onClick={() => navigate("/products")}
-              className="w-full sm:w-auto px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-full transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+              className="group relative w-full sm:w-auto px-12 py-5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl rounded-full transition-all flex items-center justify-center gap-3 overflow-hidden shadow-[0_0_40px_rgba(37,99,235,0.4)]"
             >
-              START BUILDING
-              <ArrowRight className="w-5 h-5" />
+              <span className="relative z-10">START BUILDING</span>
+              <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform" />
             </button>
-          </div>
+          </motion.div>
         </div>
       </section>
-
-
     </div>
   );
 }
-
-const FeatureBox = ({ icon, title, desc }) => (
-  <div className="p-8 bg-gray-50 dark:bg-neutral-950 border border-blue-400 dark:border-neutral-800 rounded-3xl hover:border-blue-400/50 dark:hover:border-blue-400/50 transition-colors">
-    <div className="w-16 h-16 bg-white dark:bg-neutral-900 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-blue-400 dark:border-neutral-800">
-      {icon}
-    </div>
-    <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-      {title}
-    </h3>
-    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{desc}</p>
-  </div>
-);
 
 export default Home;

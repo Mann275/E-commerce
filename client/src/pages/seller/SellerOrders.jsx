@@ -76,6 +76,51 @@ function SellerOrders() {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
+  const handleExportCSV = () => {
+    if (orders.length === 0) {
+      toast.error("No orders to export");
+      return;
+    }
+
+    const headers = [
+      "Order ID",
+      "Customer Name",
+      "Email",
+      "Date",
+      "Status",
+      "Payment Method",
+      "Total Amount",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...orders.map((o) => {
+        return [
+          o._id,
+          `${o.userId?.firstName || ""} ${o.userId?.lastName || ""}`.trim(),
+          o.userId?.email || "",
+          new Date(o.createdAt).toLocaleDateString(),
+          o.orderStatus,
+          o.paymentMethod,
+          o.totalAmount,
+        ]
+          .map((v) => `"${v}"`)
+          .join(",");
+      }),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `orders_export_${new Date().toISOString().split("T")[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("CSV Export starting...");
+  };
+
   if (loading)
     return (
       <div className="flex items-center justify-center h-64 text-sky-500 font-black animate-pulse uppercase tracking-widest text-xs italic">
@@ -108,7 +153,10 @@ function SellerOrders() {
               className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-xl py-1.5 pl-10 pr-4 text-xs font-medium focus:outline-none focus:border-sky-500 transition-all dark:text-white w-64"
             />
           </div>
-          <button className="flex items-center justify-center gap-2 px-4 py-2 bg-zinc-900 border border-white/5 rounded-xl font-black uppercase tracking-widest text-[10px] text-white transition-all hover:scale-105 active:scale-95">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-zinc-900 border border-white/5 rounded-xl font-black uppercase tracking-widest text-[10px] text-white transition-all hover:scale-105 active:scale-95"
+          >
             Export CSV
           </button>
         </div>
@@ -121,11 +169,10 @@ function SellerOrders() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-5 py-2.5 rounded-xl font-black uppercase tracking-widest text-[10px] whitespace-nowrap transition-all flex items-center gap-2
-                            ${
-                              activeTab === tab
-                                ? "bg-white dark:bg-zinc-800 text-sky-500 shadow-sm"
-                                : "text-gray-500 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white"
-                            }
+                            ${activeTab === tab
+                ? "bg-white dark:bg-zinc-800 text-sky-500 shadow-sm"
+                : "text-gray-500 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white"
+              }
                         `}
           >
             {tab}
